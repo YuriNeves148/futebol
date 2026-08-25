@@ -58,25 +58,74 @@ def tabela_inicial(competicao):
     
     st.dataframe(tabela.sort_values(by='Pontos Totais', ascending=False))
 
-st.write("## Tabela de resultados (25/26)")
-st.write("### Escolha a competição: ")
+st.write("## Tabela de resultados")
+st.write("### Escolha a liga e a temporada: ")
 competicoes = ['Premier League', 'La Liga', 'Italian', 'Bundesliga', 'Ligue 1']
-escolheu = st.selectbox(" ", competicoes)
+escolhe_liga = st.selectbox(" ", competicoes)
+escolhe_temp = st.selectbox(" ", ['Temporada 23/24', 'Temporada 24/25', 'Temporada 25/26'])
 
-def escolha(escolheu):
-    if escolheu == "Premier League":
-        premier = pd.read_csv("datasets/premier_2526.csv")
-        tabela_inicial(premier)
-    elif escolheu == "La Liga":
-        laliga = pd.read_csv("datasets/laliga_2526.csv")
-        tabela_inicial(laliga)
-    elif escolheu == "Italian":
-        italia = pd.read_csv("datasets/italia_2526.csv")
-        tabela_inicial(italia)
-    elif escolheu == "Ligue 1":
-        ligue1 = pd.read_csv("datasets/ligue1_2526.csv")
-        tabela_inicial(ligue1)
-    elif escolheu == "Bundesliga":
-        bundesliga = pd.read_csv("datasets/bundesliga_2526.csv")
-        tabela_inicial(bundesliga)
-escolha(escolheu)
+def escolhe_temporada(liga):
+    # se for premier
+    if liga == 'Premier League':
+        if escolhe_temp == 'Temporada 23/24':
+            premier = pd.read_csv('datasets/premier_2324.csv')
+            tabela_inicial(premier)
+        elif escolhe_temp == 'Temporada 24/25':
+            premier = pd.read_csv('datasets/premier_2425.csv')
+            tabela_inicial(premier)
+        else:
+            premier = pd.read_csv('datasets/premier_2526.csv')
+            tabela_inicial(premier)
+    # se la liga
+    if liga == 'La Liga':
+        if escolhe_temp == 'Temporada 23/24':
+            laliga = pd.read_csv('datasets/laliga_2324.csv')
+            tabela_inicial(laliga)
+        elif escolhe_temp == 'Temporada 24/25':
+            laliga = pd.read_csv('datasets/laliga_2425.csv')
+            tabela_inicial(laliga)
+        else:
+            laliga = pd.read_csv('datasets/laliga_2526.csv')
+            tabela_inicial(laliga)
+    # se Ligue 1
+    if liga == 'Ligue 1':
+        if escolhe_temp == 'Temporada 23/24':
+            ligue1 = pd.read_csv('datasets/ligue1_2324.csv')
+            tabela_inicial(ligue1)
+        elif escolhe_temp == 'Temporada 24/25':
+            ligue1 = pd.read_csv('datasets/ligue1_2425.csv')
+            tabela_inicial(ligue1)
+        else:
+            ligue1 = pd.read_csv('datasets/ligue1_2526.csv')
+            tabela_inicial(ligue1)
+    # se Italia
+    if liga == 'Italian':
+        if escolhe_temp == 'Temporada 23/24':
+            Italian = pd.read_csv('datasets/italia_2324.csv')
+            tabela_inicial(Italian)
+        elif escolhe_temp == 'Temporada 24/25':
+            Italian = pd.read_csv('datasets/italia_2425.csv')
+            tabela_inicial(Italian)
+        else:
+            Italian = pd.read_csv('datasets/italia_2526.csv')
+            tabela_inicial(Italian)
+    # se Alemanha
+    if liga == 'Bundesliga':
+        if escolhe_temp == 'Temporada 23/24':
+            bundesliga = pd.read_csv('datasets/bundesliga_2324.csv')
+            tabela_inicial(bundesliga)
+        elif escolhe_temp == 'Temporada 24/25':
+            bundesliga = pd.read_csv('datasets/bundesliga_2425.csv')
+            tabela_inicial(bundesliga)
+        else:
+            bundesliga = pd.read_csv('datasets/bundesliga_2526.csv')
+            tabela_inicial(bundesliga)
+    
+    return
+
+def escolha_liga(liga_escolhida):
+    escolhe_temporada(liga_escolhida)
+
+
+
+escolha_liga(escolhe_liga)

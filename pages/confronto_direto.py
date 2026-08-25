@@ -36,10 +36,10 @@ def estatisticas(competicao_df, time1, time2):
     media_cartao_a = sum(cartao_a) / len(cartao_a)
     media_cartao_v = sum(cartao_v) / len(cartao_v)
     st.markdown("#### Histórico do confronto")
-    st.write(f'Media de gols por partida: {media:.2f}')
-    st.write(f'Media de gols no 1° tempo: {media_1tempo:.2f}')
-    st.write(f'Media de cartão amarelo por partida: {media_cartao_a:.2f}')
-    st.write(f'Media de cartão vermelho por partida: {media_cartao_v:.2f}')
+    st.write('Media de gols por partida: ', round(media, 2))
+    st.write('Media de gols no 1° tempo: ', round(media_1tempo, 2))
+    st.write(f'Media de cartão amarelo por partida: ', round(media_cartao_a, 2))
+    st.write(f'Media de cartão vermelho por partida: ', round(media_cartao_v , 2))
     st.write(f'Ambas marcam: {conta_ambas} / {total_jogos}')
 
     return

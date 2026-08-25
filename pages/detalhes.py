@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.write("## Análise por Times")
+st.write("## Análise por Times (25/26)")
 st.write("### Escolha a competição e o time pertencente: ")
 
 def analise_por_time(competicao_df, time):
@@ -10,7 +10,6 @@ def analise_por_time(competicao_df, time):
                'Faltas Cometidas (média)', 'Escanteios (média)', 'Gols 1° Tempo'
                ]
         
-
     dados = {
         'casa':{},
         'visitante':{}
