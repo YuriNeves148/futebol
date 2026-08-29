@@ -4,7 +4,7 @@ import datetime as dt
 st.write("## Análise por confronto")
 
 # aproveitmaento de chutes: (chutes_ao_gol / total_chutes) ou (gols / total_chutes)
-# ultimas 5 partidas dos times, assim tem um pequeno historico de cada um
+# ultimas 5 partidas dos times, assim tem um pequeno historico de cada um ***
 
 def estatisticas(competicao_df, time1, time2):
     # media de gols:
