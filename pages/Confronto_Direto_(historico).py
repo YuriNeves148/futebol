@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import datetime as dt
+import acessa_datasets
 st.write("## Análise por confronto")
 
 # aproveitmaento de chutes: (chutes_ao_gol / total_chutes) ou (gols / total_chutes)
@@ -13,7 +14,7 @@ def estatisticas(competicao_df, time1, time2):
                              & ( (competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2) ) 
                              )]
     
-    partidas_df['Date'] = pd.to_datetime(partidas_df['Date']).dt.strftime('%d/%m/%Y')
+    partidas_df['Date'] = pd.to_datetime(partidas_df['Date'], dayfirst=True).dt.strftime('%d/%m/%Y')
 
     partidas_gol = []
     primeiro_tempo = []
@@ -48,7 +49,7 @@ def historico(competicao_df, time1, time2):
     partidas_df = competicao_df.loc[(( (competicao_df['HomeTeam'] == time1) | (competicao_df['AwayTeam'] == time1) ) 
                              & ( (competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2) ) 
                              )].copy()
-    partidas_df['Date'] = pd.to_datetime(partidas_df['Date'])
+    partidas_df['Date'] = pd.to_datetime(partidas_df['Date'], dayfirst=True)
     
     # resumo ráido
     st.write("#### Visão geral")
@@ -64,8 +65,11 @@ def historico_por_time(competicao_df, time1, time2):
     hist_time2 = competicao_df.loc[(competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2)]
     tabela_time1 = hist_time1[['Date', 'HomeTeam', 'FTHG',  'AwayTeam', 'FTAG']]
     tabela_time2 = hist_time2[['Date', 'HomeTeam', 'FTHG',  'AwayTeam', 'FTAG']]
-    tabela_time1['Date'] = pd.to_datetime(tabela_time1['Date'])
-    tabela_time2['Date'] = pd.to_datetime(tabela_time2['Date'])
+    print(tabela_time1.info())
+    print(tabela_time1.head())
+
+    tabela_time1['Date'] = pd.to_datetime(tabela_time1['Date'], dayfirst=True)
+    tabela_time2['Date'] = pd.to_datetime(tabela_time2['Date'], dayfirst=True)
     tabela_time1['Resultado'] = ""
     tabela_time2['Resultado'] = ""
 
@@ -116,97 +120,210 @@ def historico_por_time(competicao_df, time1, time2):
 
 def time_por_competicao(comp_escolhida):    
     if comp_escolhida == 'Premier League':
-        escolhe_time1 = st.selectbox('Escolha um time', premier_df['HomeTeam'].sort_values().unique())
-        escolhe_time2 = st.selectbox('Escolha OUTRO time', premier_df['HomeTeam'].sort_values().unique())
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.premier_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.premier_df['HomeTeam'].sort_values().unique())
         if escolhe_time1 == escolhe_time2:
             st.error("Os times devem ser diferentes para esse tipo de análise.")
             return
-        historico(premier_df, escolhe_time1, escolhe_time2)
-        estatisticas(premier_df, escolhe_time1, escolhe_time2)
-        historico_por_time(premier_df, escolhe_time1, escolhe_time2)
+        historico(acessa_datasets.premier_df, escolhe_time1, escolhe_time2)
+        estatisticas(acessa_datasets.premier_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.premier_df, escolhe_time1, escolhe_time2)
 
     elif comp_escolhida == 'La Liga':
-        escolhe_time1 = st.selectbox('Escolha um time', laliga_df['HomeTeam'].sort_values().unique())
-        escolhe_time2 = st.selectbox('Escolha OUTRO time', laliga_df['HomeTeam'].sort_values().unique())
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.laliga_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.laliga_df['HomeTeam'].sort_values().unique())
         if escolhe_time1 == escolhe_time2:
             st.error("Não é possível escolher o mesmo time para esta análise")
             return
-        historico(laliga_df, escolhe_time1, escolhe_time2)
-        estatisticas(laliga_df, escolhe_time1, escolhe_time2)
-        historico_por_time(laliga_df, escolhe_time1, escolhe_time2)
+        historico(acessa_datasets.laliga_df, escolhe_time1, escolhe_time2)
+        estatisticas(acessa_datasets.laliga_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.laliga_df, escolhe_time1, escolhe_time2)
 
     elif comp_escolhida == 'Italian':
-        escolhe_time1 = st.selectbox('Escolha um time', italia_df['HomeTeam'].sort_values().unique())
-        escolhe_time2 = st.selectbox('Escolha OUTRO time', italia_df['HomeTeam'].sort_values().unique())
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.italia_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.italia_df['HomeTeam'].sort_values().unique())
         if escolhe_time1 == escolhe_time2:
             st.error("Não é possível escolher o mesmo time para esta análise")
             return
-        historico(italia_df, escolhe_time1, escolhe_time2)    
-        estatisticas(italia_df, escolhe_time1, escolhe_time2)
-        historico_por_time(italia_df, escolhe_time1, escolhe_time2)
+        historico(acessa_datasets.italia_df, escolhe_time1, escolhe_time2)    
+        estatisticas(acessa_datasets.italia_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.italia_df, escolhe_time1, escolhe_time2)
 
     elif comp_escolhida == 'Bundesliga':
-        escolhe_time1 = st.selectbox('Escolha um time', bundesliga_df['HomeTeam'].sort_values().unique())
-        escolhe_time2 = st.selectbox('Escolha OUTRO time', bundesliga_df['HomeTeam'].sort_values().unique())
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.bundesliga_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.bundesliga_df['HomeTeam'].sort_values().unique())
         if escolhe_time1 == escolhe_time2:
             st.error("Não é possível escolher o mesmo time para esta análise")
             return
-        historico(bundesliga_df, escolhe_time1, escolhe_time2)
-        estatisticas(bundesliga_df, escolhe_time1, escolhe_time2)
-        historico_por_time(bundesliga_df, escolhe_time1, escolhe_time2)
+        historico(acessa_datasets.bundesliga_df, escolhe_time1, escolhe_time2)
+        estatisticas(acessa_datasets.bundesliga_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.bundesliga_df, escolhe_time1, escolhe_time2)
 
     elif comp_escolhida == 'Ligue 1':
-        escolhe_time1 = st.selectbox('Escolha um time', ligue1_df['HomeTeam'].sort_values().unique())
-        escolhe_time2 = st.selectbox('Escolha OUTRO time', ligue1_df['HomeTeam'].sort_values().unique())
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.ligue1_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.ligue1_df['HomeTeam'].sort_values().unique())
         if escolhe_time1 == escolhe_time2:
             st.error("Não é possível escolher o mesmo time para esta análise")
             return
-        historico(ligue1_df, escolhe_time1, escolhe_time2)
-        estatisticas(ligue1_df, escolhe_time1, escolhe_time2)
-        historico_por_time(ligue1_df, escolhe_time1, escolhe_time2)
+        historico(acessa_datasets.ligue1_df, escolhe_time1, escolhe_time2)
+        estatisticas(acessa_datasets.ligue1_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.ligue1_df, escolhe_time1, escolhe_time2)
+    elif comp_escolhida == 'Escocia':
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.escocia_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.escocia_df['HomeTeam'].sort_values().unique())
+        if escolhe_time1 == escolhe_time2:
+            st.error("Não é possível escolher o mesmo time para esta análise")
+            return
+        historico(acessa_datasets.escocia_df, escolhe_time1, escolhe_time2)
+        estatisticas(acessa_datasets.escocia_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.escocia_df, escolhe_time1, escolhe_time2)
+    elif comp_escolhida == 'Noruega':
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.noruega_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.noruega_df['HomeTeam'].sort_values().unique())
+        if escolhe_time1 == escolhe_time2:
+            st.error("Não é possível escolher o mesmo time para esta análise")
+            return
+        historico(acessa_datasets.noruega_df, escolhe_time1, escolhe_time2)
+        estatisticas(acessa_datasets.noruega_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.noruega_df, escolhe_time1, escolhe_time2)
+    elif comp_escolhida == 'Portugal':
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.portugal_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.portugal_df['HomeTeam'].sort_values().unique())
+        if escolhe_time1 == escolhe_time2:
+            st.error("Não é possível escolher o mesmo time para esta análise")
+            return
+        historico(acessa_datasets.portugal_df, escolhe_time1, escolhe_time2)
+        estatisticas(acessa_datasets.portugal_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.portugal_df, escolhe_time1, escolhe_time2)
+    elif comp_escolhida == 'Brasil':
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.brasil_df['Home'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.brasil_df['Home'].sort_values().unique())
+        if escolhe_time1 == escolhe_time2:
+            st.error("Não é possível escolher o mesmo time para esta análise")
+            return
+        bra_arg_historico(acessa_datasets.brasil_df, escolhe_time1, escolhe_time2)
+        bra_arg_estatistica(acessa_datasets.brasil_df, escolhe_time1, escolhe_time2)
+        bra_arg_historico_por_time(acessa_datasets.brasil_df, escolhe_time1, escolhe_time2)
 
-premier_2526_df = pd.read_csv('datasets/premier_2526.csv') 
-premier_2425_df = pd.read_csv('datasets/premier_2425.csv')
-premier_2324_df = pd.read_csv('datasets/premier_2324.csv')
-premier_2425_df['Temporada'] = "24/25"
-premier_2526_df['Temporada'] = "25/26"
-premier_2324_df['Temporada'] = "23/24"
+    elif comp_escolhida == 'Argentina':
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.argentina_df['Home'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.argentina_df['Home'].sort_values().unique())
+        if escolhe_time1 == escolhe_time2:
+            st.error("Não é possível escolher o mesmo time para esta análise")
+            return
+        bra_arg_historico(acessa_datasets.brasil_df, escolhe_time1, escolhe_time2)
+        bra_arg_estatistica(acessa_datasets.argentina_df, escolhe_time1, escolhe_time2)
+        bra_arg_historico_por_time(acessa_datasets.argentina_df, escolhe_time1, escolhe_time2)
 
-laliga_2526_df = pd.read_csv('datasets/laliga_2526.csv') 
-laliga_2425_df = pd.read_csv('datasets/laliga_2425.csv')
-laliga_2324_df = pd.read_csv('datasets/laliga_2324.csv')
-laliga_2425_df['Temporada'] = "24/25"
-laliga_2526_df['Temporada'] = "25/26"
-laliga_2324_df['Temporada'] = "23/24"
 
-italia_2526_df = pd.read_csv('datasets/italia_2526.csv') 
-italia_2425_df = pd.read_csv('datasets/italia_2425.csv')
-italia_2324_df = pd.read_csv('datasets/italia_2324.csv')
-italia_2425_df['Temporada'] = "24/25"
-italia_2526_df['Temporada'] = "25/26"
-italia_2324_df['Temporada'] = "23/24"
+# BRASIL e ARGENTINA
+def bra_arg_estatistica(competicao_df, time1, time2):
+    # media de gols:
+    partidas_df = competicao_df.loc[(( (competicao_df['Home'] == time1) | (competicao_df['Away'] == time1) ) 
+                             & ( (competicao_df['Home'] == time2) | (competicao_df['Away'] == time2) ) 
+                             )]
+    
+    partidas_df['Date'] = pd.to_datetime(partidas_df['Date'], dayfirst=True).dt.strftime('%d/%m/%Y')
 
-bundesliga_2526_df = pd.read_csv('datasets/bundesliga_2526.csv') 
-bundesliga_2425_df = pd.read_csv('datasets/bundesliga_2425.csv')
-bundesliga_2324_df = pd.read_csv('datasets/bundesliga_2324.csv')
-bundesliga_2425_df['Temporada'] = "24/25"
-bundesliga_2526_df['Temporada'] = "25/26"
-bundesliga_2324_df['Temporada'] = "23/24"
+    partidas_gol = []
+    conta_ambas = 0
+    total_jogos = 0
 
-ligue1_2526_df = pd.read_csv('datasets/ligue1_2526.csv') 
-ligue1_2425_df = pd.read_csv('datasets/ligue1_2425.csv')
-ligue1_2324_df = pd.read_csv('datasets/ligue1_2324.csv')
-ligue1_2425_df['Temporada'] = "24/25"
-ligue1_2526_df['Temporada'] = "25/26"
-ligue1_2324_df['Temporada'] = "23/24"
+    for _, linha in partidas_df.iterrows():
+        partidas_gol.append(linha['HG']+linha['AG'])
+        total_jogos += 1
+        if (linha['HG'] > 0 and linha['AG'] > 0):
+            conta_ambas += 1
 
-premier_df = pd.concat([premier_2425_df, premier_2526_df, premier_2324_df])
-laliga_df = pd.concat([laliga_2425_df, laliga_2526_df, laliga_2324_df])
-italia_df = pd.concat([italia_2425_df, italia_2526_df, italia_2324_df])
-bundesliga_df = pd.concat([bundesliga_2425_df, bundesliga_2526_df, bundesliga_2324_df])
-ligue1_df = pd.concat([ligue1_2425_df, ligue1_2526_df, ligue1_2324_df])
+    if len(partidas_gol) != 0:
+        media = sum(partidas_gol) / len(partidas_gol)
+    else:
+        media = 0
+        
+    st.markdown("#### Histórico do confronto")
+    st.write('Media de gols por partida: ', round(media, 2))
+    st.write(f'Ambas marcam: {conta_ambas} / {total_jogos}')
 
-lista_competicoes = ['Premier League', 'La Liga', 'Italian', 'Bundesliga', 'Ligue 1']
+    return
+
+def bra_arg_historico(competicao_df, time1, time2):
+    print(competicao_df)
+    partidas_df = competicao_df.loc[(( (competicao_df['Home'] == time1) | (competicao_df['Away'] == time1) ) 
+                             & ( (competicao_df['Home'] == time2) | (competicao_df['Away'] == time2) ) 
+                             )].copy()
+    partidas_df['Date'] = pd.to_datetime(partidas_df['Date'], dayfirst=True)
+    
+    # resumo ráido
+    st.markdown(f"<h3 style='text-align: center;'>{time1}  x  {time2}</h3>", unsafe_allow_html=True)
+    st.write("#### Últimos 5 jogos entre eles")
+    partidas_df = partidas_df.rename(columns={'Date':'Data', 'Home':'Casa', 'Away':'Visitante', 'HG':'Gols Casa', 'AG':'Gols Visitante'})
+    partidas_df = partidas_df.sort_values('Data', ascending=False).head(5)
+    partidas_df['Data'] = partidas_df['Data'].dt.strftime('%d/%m/%Y')
+    st.dataframe(partidas_df[['Data', 'Casa', 'Gols Casa','Visitante', 'Gols Visitante']], hide_index=True)
+    return
+
+def bra_arg_historico_por_time(competicao_df, time1, time2):
+    # ultimas 5 partidas de cada time
+    hist_time1 = competicao_df.loc[(competicao_df['Home'] == time1) | (competicao_df['Away'] == time1)]
+    hist_time2 = competicao_df.loc[(competicao_df['Home'] == time2) | (competicao_df['Away'] == time2)]
+    tabela_time1 = hist_time1[['Date', 'Home', 'HG',  'Away', 'AG']]
+    tabela_time2 = hist_time2[['Date', 'Home', 'HG',  'Away', 'AG']]
+    print(tabela_time1.info())
+    print(tabela_time1.head())
+
+    tabela_time1['Date'] = pd.to_datetime(tabela_time1['Date'], dayfirst=True)
+    tabela_time2['Date'] = pd.to_datetime(tabela_time2['Date'], dayfirst=True)
+    tabela_time1['Resultado'] = ""
+    tabela_time2['Resultado'] = ""
+
+    for indice, linha in tabela_time1.iterrows():
+        if linha['Home'] == time1:
+            if linha['HG'] > linha['AG']:
+                tabela_time1.loc[indice, 'Resultado'] = 'Vitória'
+            elif linha['HG'] < linha['AG']:
+                tabela_time1.loc[indice, 'Resultado'] = 'Derrota'
+            else:
+                tabela_time1.loc[indice, 'Resultado'] = 'Empate'
+        elif linha['Away'] == time1:
+            if linha['AG'] > linha['HG']:
+                tabela_time1.loc[indice, 'Resultado'] = 'Vitória'
+            elif linha['AG'] < linha['HG']:
+                tabela_time1.loc[indice, 'Resultado'] = 'Derrota'
+            else:
+                tabela_time1.loc[indice, 'Resultado'] = 'Empate'
+    for indice, linha in tabela_time2.iterrows():
+        if linha['Home'] == time2:
+            if linha['HG'] > linha['AG']:
+                tabela_time2.loc[indice, 'Resultado'] = 'Vitória'
+            elif linha['HG'] < linha['AG']:
+                tabela_time2.loc[indice, 'Resultado'] = 'Derrota'
+            else:
+                tabela_time2.loc[indice, 'Resultado'] = 'Empate'
+        elif linha['Away'] == time2:
+            if linha['AG'] > linha['HG']:
+                tabela_time2.loc[indice, 'Resultado'] = 'Vitória'
+            elif linha['AG'] < linha['HG']:
+                tabela_time2.loc[indice, 'Resultado'] = 'Derrota'
+            else:
+                tabela_time2.loc[indice, 'Resultado'] = 'Empate'
+    tabela_time1 = tabela_time1.rename(columns={'Date': 'Data', 'Home':'Casa', 'Away':'Visitante', 'HG': 'Gols Casa', 'AG': 'Gols Visitante'})
+    tabela_time2 = tabela_time2.rename(columns={'Date': 'Data', 'Home':'Casa', 'Away':'Visitante', 'HG': 'Gols Casa', 'AG': 'Gols Visitante'})
+
+    tabela_time1 = tabela_time1.sort_values('Data', ascending=False).head()
+    tabela_time2= tabela_time2.sort_values('Data', ascending=False).head()
+
+    tabela_time1['Data'] = tabela_time1['Data'].dt.strftime('%d/%m/%Y')
+    tabela_time2['Data'] = tabela_time2['Data'].dt.strftime('%d/%m/%Y')
+
+    st.write(f"#### Últimas 5 partidas do {time1}:")
+    st.dataframe(tabela_time1, hide_index=True)
+    st.write(f"#### Últimas 5 partidas do {time2}:")
+    st.dataframe(tabela_time2, hide_index=True)
+    return
+
+
+
+lista_competicoes = ['Brasil', 'Argentina', 'Premier League', 'La Liga', 'Italian', 'Bundesliga', 'Ligue 1', 'Escocia', 'Noruega', 'Portugal']
 comp_escolhida = st.selectbox("Escolha a competicao", lista_competicoes)
 time_por_competicao(comp_escolhida)
 

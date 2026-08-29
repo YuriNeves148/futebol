@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import url
 from datetime import datetime
+import datetime as dt
 
 st.write("## Análise por Times ")
 st.write("### Escolha a competição e o time pertencente: ")
@@ -176,6 +177,42 @@ def goleada(competicao_df, time):
 
     return
 
+def ultimas_partidas(compericao_df, time):
+    # historico jogando dentro de casa
+    partidas_casa = compericao_df[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[compericao_df['HomeTeam'] == time]
+    partidas_casa['Date'] = pd.to_datetime(partidas_casa['Date'], format='%d/%m/%Y')
+    partidas_casa['Date'] = partidas_casa['Date'].dt.strftime('%d/%m/%Y')
+    partidas_casa= partidas_casa.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
+    partidas_casa['RESULTADO'] = "EMPATE"
+    partidas_casa.loc[partidas_casa['Gols Casa'] > partidas_casa['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
+    partidas_casa.loc[partidas_casa['Gols Casa'] < partidas_casa['Gols Visitante'], 'RESULTADO'] = 'DERROTA'    
+    # historico jogando fora de casa
+    partidas_fora = compericao_df[['Date' ,'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[compericao_df['AwayTeam'] == time]
+    partidas_fora['Date'] = pd.to_datetime(partidas_fora['Date'], format='%d/%m/%Y')
+    partidas_fora['Date'] = partidas_fora['Date'].dt.strftime('%d/%m/%Y')
+    partidas_fora= partidas_fora.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
+    partidas_fora['RESULTADO'] = "EMPATE"
+    partidas_fora.loc[partidas_fora['Gols Casa'] > partidas_fora['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
+    partidas_fora.loc[partidas_fora['Gols Casa'] < partidas_fora['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
+
+    # historico das 5 utimas partidas
+    ultimas_partidas = compericao_df[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[(compericao_df['HomeTeam'] == time) | (compericao_df['AwayTeam'] == time)]
+    ultimas_partidas['Date'] = pd.to_datetime(ultimas_partidas['Date'], format='%d/%m/%Y')
+    ultimas_partidas['Date'] = ultimas_partidas['Date'].dt.strftime('%d/%m/%Y')
+    ultimas_partidas = ultimas_partidas.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
+    ultimas_partidas['RESULTADO'] = "EMPATE"
+    ultimas_partidas.loc[ultimas_partidas['Gols Casa'] > ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
+    ultimas_partidas.loc[ultimas_partidas['Gols Casa'] < ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
+
+    
+    st.write("#### últimas 5 partidas:")
+    st.dataframe(ultimas_partidas.tail(), hide_index=True)    
+    st.write("#### últimas 5 partidas jogando em CASA:")
+    st.dataframe(partidas_casa.tail(), hide_index=True)
+    st.write("#### últimas 5 partidas jogando como VISITANTE:")
+    st.dataframe(partidas_fora.tail(), hide_index=True)
+
+    return
 
 # APENAS Brasil e Argentina
 def br_arg_sequencia_vit_der(competicao_df, time):
@@ -261,10 +298,43 @@ def br_arg_goleada(competicao_df, time):
                 placar[0] = linha['HG']
                 placar[1] = linha['AG']
 
-    st.write(f"Maior goleada do {time}: {placar[0]} X {placar[1]}",)
+    st.write(f"Maior goleada do {time}: {placar[0]:.0f} X {placar[1]:.0f}")
 
     return
 
+def br_arg_ultimas_partidas(compericao_df, time):
+    # historico jogando dentro de casa
+    partidas_casa = compericao_df[['Date', 'Home', 'Away', 'HG', 'AG']].loc[compericao_df['Home'] == time]
+    partidas_casa['Date'] = partidas_casa['Date'].dt.strftime('%d/%m/%Y')
+    partidas_casa= partidas_casa.rename(columns={'Date': 'Data', 'Home':'Casa', 'Away':'Visitante', 'HG':'Gols Casa', 'AG':'Gols Visitante'})
+    partidas_casa['RESULTADO'] = "EMPATE"
+    partidas_casa.loc[partidas_casa['Gols Casa'] > partidas_casa['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
+    partidas_casa.loc[partidas_casa['Gols Casa'] < partidas_casa['Gols Visitante'], 'RESULTADO'] = 'DERROTA'    
+    # historico jogando fora de casa
+    partidas_fora = compericao_df[['Date' ,'Home', 'Away', 'HG', 'AG']].loc[compericao_df['Away'] == time]
+    partidas_fora['Date'] = partidas_fora['Date'].dt.strftime('%d/%m/%Y')
+    partidas_fora= partidas_fora.rename(columns={'Date': 'Data', 'Home':'Casa', 'Away':'Visitante', 'HG':'Gols Casa', 'AG':'Gols Visitante'})
+    partidas_fora['RESULTADO'] = "EMPATE"
+    partidas_fora.loc[partidas_fora['Gols Casa'] > partidas_fora['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
+    partidas_fora.loc[partidas_fora['Gols Casa'] < partidas_fora['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
+
+    # historico das 5 utimas partidas
+    ultimas_partidas = compericao_df[['Date', 'Home', 'Away', 'HG', 'AG']].loc[(compericao_df['Home'] == time) | (compericao_df['Away'] == time)]
+    ultimas_partidas['Date'] = ultimas_partidas['Date'].dt.strftime('%d/%m/%Y')
+    ultimas_partidas= ultimas_partidas.rename(columns={'Date': 'Data', 'Home':'Casa', 'Away':'Visitante', 'HG':'Gols Casa', 'AG':'Gols Visitante'})
+    ultimas_partidas['RESULTADO'] = "EMPATE"
+    ultimas_partidas.loc[ultimas_partidas['Gols Casa'] > ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
+    ultimas_partidas.loc[ultimas_partidas['Gols Casa'] < ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
+
+    
+    st.write("#### últimas 5 partidas:")
+    st.dataframe(ultimas_partidas.tail(), hide_index=True)    
+    st.write("#### últimas 5 partidas jogando em CASA:")
+    st.dataframe(partidas_casa.tail(), hide_index=True)
+    st.write("#### últimas 5 partidas jogando como VISITANTE:")
+    st.dataframe(partidas_fora.tail(), hide_index=True)
+
+    return
 # resultado ultimas 5 partidas do time
 # resultado ultimas 5 partidas do time jogando em casa
 # resultado ultimas 5 partidas do time jogando fora
@@ -314,60 +384,78 @@ def time_por_competicao(competicao_escolhida):
     if competicao_escolhida == 'Premier League':
         inglaterra_1 = pd.read_csv(url.inglaterra_1)
         escolhe_time = st.selectbox('Escolha um time da Premier League', inglaterra_1['HomeTeam'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(inglaterra_1, escolhe_time)
         sequencia_vitorias_derrotas(inglaterra_1, escolhe_time)
         goleada(inglaterra_1, escolhe_time)
         st.write("## Análise por Juiz")
         analise_por_juiz(inglaterra_1)
+        ultimas_partidas(inglaterra_1, escolhe_time)
     elif competicao_escolhida == 'Brasileirão':
         brasileirao = pd.read_csv(url.brasileirao)
         brasileirao['Date'] = pd.to_datetime(brasileirao['Date'], format="%d/%m/%Y")
         brasileirao = brasileirao.loc[(brasileirao['Date'] >= datetime(2026, 1, 28)) & (brasileirao['Date'] <= datetime(2026, 12, 2))]
         escolhe_time = st.selectbox('Escolha um time do Brasileirão:', brasileirao['Home'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         bra_arg_analie(brasileirao, competicao_escolhida, escolhe_time)
+        br_arg_ultimas_partidas(brasileirao, escolhe_time)
     elif competicao_escolhida == 'La Liga':
         espanha_1 = pd.read_csv(url.espanha_1)
         escolhe_time = st.selectbox('Escolha um time da competição da La Liga', espanha_1['HomeTeam'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(espanha_1 ,escolhe_time)
         sequencia_vitorias_derrotas(espanha_1, escolhe_time)
         goleada(espanha_1, escolhe_time)
+        ultimas_partidas(espanha_1, escolhe_time)
     elif competicao_escolhida == 'Italia':
         italia_1 = pd.read_csv(url.italia_1)
         escolhe_time = st.selectbox('Escolha um time da liga Italiana', italia_1['HomeTeam'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(italia_1, escolhe_time)
         sequencia_vitorias_derrotas(italia_1, escolhe_time)
         goleada(italia_1, escolhe_time)
+        ultimas_partidas(italia_1, escolhe_time)
     elif competicao_escolhida == 'Ligue 1':
         franca_1 = pd.read_csv(url.franca_1)
         escolhe_time = st.selectbox('Escolha um time da Ligue 1:', franca_1['HomeTeam'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(franca_1, escolhe_time)
         sequencia_vitorias_derrotas(franca_1, escolhe_time)
         goleada(franca_1, escolhe_time)
+        ultimas_partidas(franca_1, escolhe_time)
     elif competicao_escolhida == 'Holanda':
         holanda_1 = pd.read_csv(url.holanda_1)
         escolhe_time = st.selectbox('Escolha um time da Holanda:', holanda_1['HomeTeam'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(holanda_1, escolhe_time)
         sequencia_vitorias_derrotas(holanda_1, escolhe_time)
         goleada(holanda_1, escolhe_time)
+        ultimas_partidas(holanda_1, escolhe_time)
     elif competicao_escolhida == 'Portugal':
         portugla_1 = pd.read_csv(url.portugla_1)
         escolhe_time = st.selectbox('Escolha um time de Portugal:', portugla_1['HomeTeam'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(portugla_1, escolhe_time)
         sequencia_vitorias_derrotas(portugla_1, escolhe_time)
         goleada(portugla_1, escolhe_time)
+        ultimas_partidas(portugla_1, escolhe_time)
     elif competicao_escolhida == 'Escocia':
         escocia_1 = pd.read_csv(url.escocia_1)
         escolhe_time = st.selectbox('Escolha um time da Esócia:', escocia_1['HomeTeam'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(escocia_1, escolhe_time)
         sequencia_vitorias_derrotas(escocia_1, escolhe_time)
         goleada(escocia_1, escolhe_time)
+        ultimas_partidas(escocia_1, escolhe_time)
     elif competicao_escolhida == 'Argentina':
         argentina_1 = pd.read_csv(url.argentina_1)
         argentina_1['Date'] = pd.to_datetime(argentina_1['Date'], format="%d/%m/%Y")
         argentina_1 = argentina_1.loc[(argentina_1['Date'] >= datetime(2026, 1, 22)) & (argentina_1['Date'] <= datetime(2026, 12, 12))]
         escolhe_time = st.selectbox('Escolha um time da Argentina:', argentina_1['Home'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         bra_arg_analie(argentina_1, competicao_escolhida, escolhe_time)  
-       
+        br_arg_ultimas_partidas(argentina_1, escolhe_time)
+        
 # selecionar competicao e seus respectivos times
 competicoes_ = ['Premier League', 'Brasileirão', 'La Liga', 'Italia', 'Ligue 1', 'Holanda', 'Portugal', 'Escocia', 'Argentina']
 escolhe_comp = st.selectbox("Escolha a competição: ",competicoes_)
