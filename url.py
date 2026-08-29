@@ -1,0 +1,10 @@
+
+brasileirao = "https://www.football-data.co.uk/new/BRA.csv"
+inglaterra_1 = "https://www.football-data.co.uk/mmz4281/2627/E0.csv"
+franca_1 = "https://www.football-data.co.uk/mmz4281/2627/F1.csv"
+italia_1 = "https://www.football-data.co.uk/mmz4281/2627/I1.csv"
+espanha_1 = "https://www.football-data.co.uk/mmz4281/2627/SP1.csv"
+holanda_1  = "https://www.football-data.co.uk/mmz4281/2627/N1.csv"
+portugla_1 = "https://www.football-data.co.uk/mmz4281/2627/P1.csv"
+escocia_1 = "https://www.football-data.co.uk/mmz4281/2627/SC0.csv"
+argentina_1 = "https://www.football-data.co.uk/new/ARG.csv"
