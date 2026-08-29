@@ -38,9 +38,7 @@ Este projeto visa concentrar essas informações em um só lugar com uma interfa
   Esse projeto só foi possível ser desenvolvido por conta da comunidade no site que disponibilizou .csv com os dados perfeitamente organizados.
   Site em questão: [football-data.co.uk](https://www.football-data.co.uk/)
 ## Autor
- Yuri de Souza Neves
- Linkedin: [Yuri.Neves.148](www.linkedin.com/in/yuri-neves-75b701400)
- Email: Yuri.Neves.148@gmail.com
+ Yuri de Souza Neves - Linkedin: [Yuri.Neves.148](www.linkedin.com/in/yuri-neves-75b701400) - Email: Yuri.Neves.148@gmail.com
  
 
 
