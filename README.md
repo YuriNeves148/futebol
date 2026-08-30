@@ -8,7 +8,7 @@ Este projeto visa concentrar essas informações em um só lugar com uma interfa
 
 **Link para acessar a página:** [futebol-estatisticas.streamlit.app](https://futebolestatisticas.streamlit.app/)
 
-## Demonstração (as imagem não mostra todos os dados)
+## Demonstração (as imagens não mostram todos os dados)
  - Histórico do confronto entre Flamengo x Corinthians:
    
 <img width="1539" height="900" alt="Captura de tela de 2026-08-29 19-10-31" src="https://github.com/user-attachments/assets/a73ddbbb-b87f-4b46-9754-0d1667e5bcc9" />
