@@ -35,7 +35,7 @@ Este projeto visa concentrar essas informações em um só lugar com uma interfa
       3. Na raiz do projeto, rode: streamlit run Tabelas_Atuais.py 
 
  ## Créditos
-  Esse projeto só foi possível ser desenvolvido por conta da comunidade no site que disponibilizou .csv com os dados perfeitamente organizados.
+  Esse projeto só foi possível ser desenvolvido por conta da comunidade no site que disponibilizou os arquivos .csv com os dados perfeitamente organizados.
   Site em questão: [football-data.co.uk](https://www.football-data.co.uk/)
 ## Autor
  Yuri de Souza Neves - Linkedin: [Yuri.Neves.148](https://www.linkedin.com/in/yuri-neves-75b701400) - Email: Yuri.Neves.148@gmail.com
