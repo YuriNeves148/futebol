@@ -108,6 +108,7 @@ def mostra_dataframe(dataframe):
     # st.write(tabela)
     return
 
+st.markdown(f"<h1 style='text-align: center; text-decoration: underline white solid 3px;'>Lista de Ligas Temporada 26/27</h1>", unsafe_allow_html=True)
 st.write("### Brasil - Brasileirão")
 brasileirao_df = pd.read_csv(url.brasileirao)
 brasileirao_df['Date'] = pd.to_datetime(brasileirao_df['Date'], format="%d/%m/%Y")
