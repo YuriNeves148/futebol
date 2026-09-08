@@ -1,5 +1,6 @@
 # Análise de Ligas e Times de Futebol
 Um projeto perfeito para as pessoas que buscam saber um pouco mais sobre estatísticas de times e ligas de futebol concentradas em apenas uma aplicação.
+(se porventura mostrar um erro ao acessar a as tabelas, muito provavelmente o site de acesso às informações está fora do ar temporariamente)
 
 ## Sobre
 E se uma pessoa pretende saber um pouco mais sobre times de ligas de futebol como estatísticas ou histórico de confronto? 
