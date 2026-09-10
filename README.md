@@ -10,7 +10,7 @@ Este projeto visa concentrar essas informações em um só lugar com uma interfa
 
 Ao acessar o link abaixo, talvez seja necessário 'acordar' o site, para isso, basta clicar no botão que aparecerá na tela e aguardar o carregamento. Se demorar demais, reinicie a página.
 
-Link para acessar a página:** [futebol-estatisticas.streamlit.app](https://futebolestatisticas.streamlit.app/) **
+Link para acessar a página: [futebol-estatisticas.streamlit.app](https://futebolestatisticas.streamlit.app/) 
 
 ## Demonstração (as imagens não mostram todos os dados)
  - Histórico do confronto entre Flamengo x Corinthians:
