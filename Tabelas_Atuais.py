@@ -3,6 +3,7 @@ from datetime import datetime
 import datetime as dt
 import streamlit as st
 import url
+
 def mostra_dataframe_bra(dataframe):
     tabela = dataframe[['Date', 'Home', 'Away', 'Res', 'HG', 'AG']]
     tabela['Date'] = tabela['Date'].dt.strftime('%d/%m/%Y')
@@ -116,6 +117,9 @@ brasileirao_2026_df = brasileirao_df.loc[(brasileirao_df['Date'] >= datetime(202
 mostra_dataframe_bra(brasileirao_2026_df)
 st.write("### Inglaterra - Premier League")
 df = pd.read_csv(url.inglaterra_1)
+mostra_dataframe(df)
+st.write("### Alemanha - Bundesliga")
+df = pd.read_csv(url.bundesliga)
 mostra_dataframe(df)
 st.write("### França - Ligue 1")
 df = pd.read_csv(url.franca_1)

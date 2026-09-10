@@ -9,7 +9,6 @@ st.write("## Análise por confronto")
 
 def estatisticas(competicao_df, time1, time2):
     # media de gols:
-    print('\n\n\naaaa')
     partidas_df = competicao_df.loc[(( (competicao_df['HomeTeam'] == time1) | (competicao_df['AwayTeam'] == time1) ) 
                              & ( (competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2) ) 
                              )]
@@ -22,26 +21,44 @@ def estatisticas(competicao_df, time1, time2):
     cartao_v = []
     conta_ambas = 0
     total_jogos = 0
+    cantos_time1 = []
+    cantos_time2 = []
 
     for _, linha in partidas_df.iterrows():
         partidas_gol.append(linha['FTHG']+linha['FTAG'])
         primeiro_tempo.append(linha['HTHG'] + linha['HTAG'])
         cartao_a.append(linha['HY'] + linha['AY'])
         cartao_v.append(linha['HR'] + linha['AR'])
+        
         total_jogos += 1
         if (linha['FTHG'] > 0 and linha['FTAG'] > 0):
             conta_ambas += 1
+        
+        if (linha['HomeTeam'] == time1):
+            cantos_time1.append(linha['HC'])
+        if (linha['AwayTeam'] == time1):
+            cantos_time1.append(linha['AC'])
+        if (linha['HomeTeam'] == time2):
+            cantos_time2.append(linha['HC'])
+        if (linha['AwayTeam'] == time2):
+            cantos_time2.append(linha['AC'])
 
     media = sum(partidas_gol) / len(partidas_gol)
     media_1tempo = sum(primeiro_tempo) / len(primeiro_tempo)
     media_cartao_a = sum(cartao_a) / len(cartao_a)
     media_cartao_v = sum(cartao_v) / len(cartao_v)
+    media_cantos_time1 = sum(cantos_time1) / len(cantos_time1)
+    media_cantos_time2 = sum(cantos_time2) / len(cantos_time2) 
+    
+
     st.markdown("#### Histórico do confronto")
     st.write('Media de gols por partida: ', round(media, 2))
     st.write('Media de gols no 1° tempo: ', round(media_1tempo, 2))
     st.write(f'Media de cartão amarelo por partida: ', round(media_cartao_a, 2))
     st.write(f'Media de cartão vermelho por partida: ', round(media_cartao_v , 2))
     st.write(f'Ambas marcam: {conta_ambas} / {total_jogos}')
+    st.write(f'Média de escanteios - {time1}: ', round(media_cantos_time1, 2))
+    st.write(f'Média de escanteios - {time2}: ', round(media_cantos_time2, 2))
 
     return
 
@@ -65,8 +82,6 @@ def historico_por_time(competicao_df, time1, time2):
     hist_time2 = competicao_df.loc[(competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2)]
     tabela_time1 = hist_time1[['Date', 'HomeTeam', 'FTHG',  'AwayTeam', 'FTAG']]
     tabela_time2 = hist_time2[['Date', 'HomeTeam', 'FTHG',  'AwayTeam', 'FTAG']]
-    print(tabela_time1.info())
-    print(tabela_time1.head())
 
     tabela_time1['Date'] = pd.to_datetime(tabela_time1['Date'], dayfirst=True)
     tabela_time2['Date'] = pd.to_datetime(tabela_time2['Date'], dayfirst=True)
@@ -168,6 +183,16 @@ def time_por_competicao(comp_escolhida):
         historico(acessa_datasets.ligue1_df, escolhe_time1, escolhe_time2)
         estatisticas(acessa_datasets.ligue1_df, escolhe_time1, escolhe_time2)
         historico_por_time(acessa_datasets.ligue1_df, escolhe_time1, escolhe_time2)
+    elif comp_escolhida == 'Holanda':
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.holanda_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.holanda_df['HomeTeam'].sort_values().unique())
+        if escolhe_time1 == escolhe_time2:
+            st.error("Não é possível escolher o mesmo time para esta análise")
+            return
+        historico(acessa_datasets.holanda_df, escolhe_time1, escolhe_time2)
+        estatisticas(acessa_datasets.holanda_df, escolhe_time1, escolhe_time2)
+        historico_por_time(acessa_datasets.holanda_df, escolhe_time1, escolhe_time2)
+
     elif comp_escolhida == 'Escocia':
         escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.escocia_df['HomeTeam'].sort_values().unique())
         escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.escocia_df['HomeTeam'].sort_values().unique())
@@ -211,7 +236,7 @@ def time_por_competicao(comp_escolhida):
         if escolhe_time1 == escolhe_time2:
             st.error("Não é possível escolher o mesmo time para esta análise")
             return
-        bra_arg_historico(acessa_datasets.brasil_df, escolhe_time1, escolhe_time2)
+        bra_arg_historico(acessa_datasets.argentina_df, escolhe_time1, escolhe_time2)
         bra_arg_estatistica(acessa_datasets.argentina_df, escolhe_time1, escolhe_time2)
         bra_arg_historico_por_time(acessa_datasets.argentina_df, escolhe_time1, escolhe_time2)
 
@@ -247,11 +272,13 @@ def bra_arg_estatistica(competicao_df, time1, time2):
     return
 
 def bra_arg_historico(competicao_df, time1, time2):
-    print(competicao_df)
+    print("comp:\n\n", competicao_df)
     partidas_df = competicao_df.loc[(( (competicao_df['Home'] == time1) | (competicao_df['Away'] == time1) ) 
                              & ( (competicao_df['Home'] == time2) | (competicao_df['Away'] == time2) ) 
                              )].copy()
+    print(partidas_df)
     partidas_df['Date'] = pd.to_datetime(partidas_df['Date'], dayfirst=True)
+    
     
     # resumo ráido
     st.markdown(f"<h3 style='text-align: center;'>{time1}  x  {time2}</h3>", unsafe_allow_html=True)
@@ -263,13 +290,13 @@ def bra_arg_historico(competicao_df, time1, time2):
     return
 
 def bra_arg_historico_por_time(competicao_df, time1, time2):
+
     # ultimas 5 partidas de cada time
     hist_time1 = competicao_df.loc[(competicao_df['Home'] == time1) | (competicao_df['Away'] == time1)]
     hist_time2 = competicao_df.loc[(competicao_df['Home'] == time2) | (competicao_df['Away'] == time2)]
     tabela_time1 = hist_time1[['Date', 'Home', 'HG',  'Away', 'AG']]
     tabela_time2 = hist_time2[['Date', 'Home', 'HG',  'Away', 'AG']]
-    print(tabela_time1.info())
-    print(tabela_time1.head())
+
 
     tabela_time1['Date'] = pd.to_datetime(tabela_time1['Date'], dayfirst=True)
     tabela_time2['Date'] = pd.to_datetime(tabela_time2['Date'], dayfirst=True)
@@ -323,7 +350,7 @@ def bra_arg_historico_por_time(competicao_df, time1, time2):
 
 
 
-lista_competicoes = ['Brasil', 'Argentina', 'Premier League', 'La Liga', 'Italian', 'Bundesliga', 'Ligue 1', 'Escocia', 'Noruega', 'Portugal']
+lista_competicoes = ['Brasil', 'Argentina', 'Premier League', 'La Liga', 'Italian', 'Bundesliga', 'Ligue 1', 'Escocia', 'Noruega', 'Portugal', 'Holanda']
 comp_escolhida = st.selectbox("Escolha a competicao", lista_competicoes)
 time_por_competicao(comp_escolhida)
 

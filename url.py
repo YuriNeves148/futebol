@@ -1,6 +1,7 @@
 
 brasileirao = "https://www.football-data.co.uk/new/BRA.csv"
 inglaterra_1 = "https://www.football-data.co.uk/mmz4281/2627/E0.csv"
+bundesliga = "https://www.football-data.co.uk/mmz4281/2627/D1.csv"
 franca_1 = "https://www.football-data.co.uk/mmz4281/2627/F1.csv"
 italia_1 = "https://www.football-data.co.uk/mmz4281/2627/I1.csv"
 espanha_1 = "https://www.football-data.co.uk/mmz4281/2627/SP1.csv"

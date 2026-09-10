@@ -434,6 +434,22 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         sequencia_vitorias_derrotas(espanha_1, escolhe_time, temporada_escolhida)
         goleada(espanha_1, escolhe_time, temporada_escolhida)
         ultimas_partidas(espanha_1, escolhe_time, temporada_escolhida)
+    elif competicao_escolhida == 'Bundesliga':
+        if temporada_escolhida == '26/27':
+            bundesliga = pd.read_csv(url.bundesliga)
+            bundesliga['Date'] = pd.to_datetime(bundesliga['Date'],  format='%d/%m/%Y')
+        elif temporada_escolhida == '25/26':
+            bundesliga = acessa_datasets.bundesliga_2526_df
+        elif temporada_escolhida == '24/25':
+            bundesliga = acessa_datasets.bundesliga_2425_df
+        else:
+            bundesliga = acessa_datasets.bundesliga_2324_df
+        escolhe_time = st.selectbox('Escolha um time da Bundeliga', bundesliga['HomeTeam'].sort_values().unique())
+        st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        analise_por_time(bundesliga, escolhe_time, escolhe_temporada)
+        sequencia_vitorias_derrotas(bundesliga, escolhe_time, escolhe_temporada)
+        goleada(bundesliga, escolhe_time, escolhe_temporada)
+        ultimas_partidas(bundesliga, escolhe_time, escolhe_temporada)
     elif competicao_escolhida == 'Italia':
         if temporada_escolhida == '26/27':
             italia_1 = pd.read_csv(url.italia_1)
@@ -539,7 +555,7 @@ st.write("### Escolha a competição e o time pertencente: ")
 
 # selecionar competicao e seus respectivos times
 escolhe_temporada = st.selectbox("Escolha a temporada: ", ["26/27", "25/26", "24/25", "23/24"])
-competicoes_ = ['Premier League', 'Brasileirão', 'La Liga', 'Italia', 'Ligue 1', 'Holanda', 'Portugal', 'Escocia', 'Argentina']
+competicoes_ = ['Premier League', 'Brasileirão', 'La Liga', 'Bundesliga', 'Italia', 'Ligue 1', 'Holanda', 'Portugal', 'Escocia', 'Argentina']
 escolhe_comp = st.selectbox("Escolha a competição: ",competicoes_)
 time_por_competicao(escolhe_comp, escolhe_temporada)
 
