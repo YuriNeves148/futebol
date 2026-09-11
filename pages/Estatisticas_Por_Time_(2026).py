@@ -34,7 +34,6 @@ def gerenciamento_analise_time(competicao_df, filtro, time, escolhe_temporada):
         gols_casa = competicao_df.groupby('HomeTeam')['FTHG'].sum().get(time, 0)
         gols_visitante = competicao_df.groupby('AwayTeam')['FTAG'].sum().get(time, 0)
         return gols_casa, gols_visitante
-    
     # gols por partida
     if filtro == 'Gols por Partida':
         gols_casa = competicao_df.groupby('HomeTeam')['FTHG'].mean().get(time, 0)
@@ -183,27 +182,28 @@ def ultimas_partidas(compericao_df, time, escolhe_temporada):
     partidas_casa['RESULTADO'] = "EMPATE"
     partidas_casa.loc[partidas_casa['Gols Casa'] > partidas_casa['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
     partidas_casa.loc[partidas_casa['Gols Casa'] < partidas_casa['Gols Visitante'], 'RESULTADO'] = 'DERROTA'    
-    partidas_casa = partidas_casa.tail()
+    partidas_casa = partidas_casa.head()
     # historico jogando fora de casa
     partidas_fora = compericao_df[['Date' ,'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[compericao_df['AwayTeam'] == time]
     partidas_fora= partidas_fora.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
     partidas_fora['RESULTADO'] = "EMPATE"
     partidas_fora.loc[partidas_fora['Gols Casa'] > partidas_fora['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
     partidas_fora.loc[partidas_fora['Gols Casa'] < partidas_fora['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
-    partidas_fora = partidas_fora.tail()
+    partidas_fora = partidas_fora.head()
     # historico das 5 utimas partidas
     ultimas_partidas = compericao_df[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[(compericao_df['HomeTeam'] == time) | (compericao_df['AwayTeam'] == time)]
     ultimas_partidas = ultimas_partidas.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
     ultimas_partidas['RESULTADO'] = "EMPATE"
     ultimas_partidas.loc[ultimas_partidas['Gols Casa'] > ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
     ultimas_partidas.loc[ultimas_partidas['Gols Casa'] < ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
-    
+    ultimas_partidas = ultimas_partidas.head()
+
     # CONTINUAR FORMATANDO DATAS ***
-    st.write("#### últimas 5 partidas:")
+    st.write("#### Últimas 5 partidas:")
     st.dataframe(ultimas_partidas.style.format({'Data': '{:%d/%m/%Y}'}), hide_index=True )    
-    st.write("#### últimas 5 partidas jogando em CASA:")
+    st.write("#### Últimas 5 - CASA:")
     st.dataframe(partidas_casa.style.format({'Data': '{:%d/%m/%Y}'}), hide_index=True)
-    st.write("#### últimas 5 partidas jogando como VISITANTE:")
+    st.write("#### Últimas 5 - VISITANTE:")
     st.dataframe(partidas_fora.style.format({'Data': '{:%d/%m/%Y}'}), hide_index=True)
 
     return
@@ -333,11 +333,11 @@ def br_arg_ultimas_partidas(compericao_df, time, temporada_escolhida):
     ultimas_partidas['Gols Casa'] = ultimas_partidas['Gols Casa'].astype(int)
     ultimas_partidas['Gols Visitante'] = ultimas_partidas['Gols Visitante'].astype(int)
     
-    st.write("#### últimas 5 partidas:")
+    st.write("#### Últimas 5 partidas:")
     st.dataframe(ultimas_partidas.style.format({'Data':'{:%d/%m/%Y}'}), hide_index=True)    
-    st.write("#### últimas 5 partidas jogando em CASA:")
+    st.write("#### Últimas 5 - CASA:")
     st.dataframe(partidas_casa.style.format({'Data':'{:%d/%m/%Y}'}), hide_index=True)
-    st.write("#### últimas 5 partidas jogando como VISITANTE:")
+    st.write("#### Últimas 5 - VISITANTE:")
     st.dataframe(partidas_fora.style.format({'Data':'{:%d/%m/%Y}'}), hide_index=True)
 
     return
@@ -550,7 +550,7 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         br_arg_ultimas_partidas(argentina_1, escolhe_time, temporada_escolhida)
 
 
-st.write("<h1 style='text-align:center;'> Análise por Time por Temporada </h1>", unsafe_allow_html=True)
+st.write("<h1 style='text-align:center;'> Análise do Time por Temporada </h1>", unsafe_allow_html=True)
 st.write("### Escolha a competição e o time pertencente: ")
 
 # selecionar competicao e seus respectivos times
