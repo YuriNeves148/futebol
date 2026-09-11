@@ -278,7 +278,26 @@ def br_arg_gerenciamento_por_time(competicao_df, filtro, time, temporada_escolhi
         gols_casa = f'{gols_casa:.2f}'
         gols_visitante = f'{gols_visitante:.2f}'
         return gols_casa, gols_visitante
+    if filtro == 'Gols Sofridos':
+        gols_sofridos_casa = competicao_df.groupby('Home')['AG'].sum().get(time, 0)
+        gols_sofridos_visi = competicao_df.groupby('Away')['HG'].sum().get(time, 0)
+
+        return f'{gols_sofridos_casa:.0f}', f'{gols_sofridos_visi:.0f}'
     
+
+    if filtro == 'Gols Sofridos por Partida':
+        partidas_casa = competicao_df.loc[competicao_df['Home'] == time].groupby('Home').size().get(time, 0)
+        partidas_visitante =  competicao_df.loc[competicao_df['Away'] == time].groupby('Away').size().get(time, 0)
+        
+        gols_sofridos_casa = competicao_df.groupby('Home')['AG'].sum().get(time, 0)
+        gols_sofridos_visi = competicao_df.groupby('Away')['HG'].sum().get(time, 0)
+
+        casa = gols_sofridos_casa / partidas_casa
+        visi = gols_sofridos_visi / partidas_visitante
+
+        return f'{casa:.2f}', f'{visi:.2f}'
+    
+
     # partidas ganhas
     if filtro == 'Partidas Ganhas':
         ganhas_casa = competicao_df.loc[competicao_df['Res'] == 'H'].groupby('Home')['Res'].size().get(time, 0)
@@ -316,7 +335,8 @@ def br_arg_goleada(competicao_df, time):
     placar = [0,0]
     # quando o time jogou 
     jogos = competicao_df.loc[(competicao_df['Home'] == time) | (competicao_df['Away'] == time)]
-    
+    gols_sofridos = 0
+    gols_feitos = 0
     for _, linha in jogos.iterrows():
         # ganhou a partida?
         if (linha['Home'] == time and linha['Res'] == 'H'):  
@@ -335,7 +355,19 @@ def br_arg_goleada(competicao_df, time):
                 placar[0] = linha['HG']
                 placar[1] = linha['AG']
 
+        # SALDO DE GOLS
+        if (linha['Home'] == time):
+            gols_sofridos += linha['AG'] 
+        elif (linha['Away'] == time):
+            gols_sofridos += linha['HG']
+        if (linha['Home'] == time):
+            gols_feitos += linha['HG'] 
+        elif (linha['Away'] == time):
+            gols_feitos += linha['AG']
+        saldo = int(gols_feitos - gols_sofridos)
+        
     st.write(f"Maior goleada do {time}: {placar[0]:.0f} X {placar[1]:.0f}")
+    st.write(f"Saldo de gols do {time}: ", saldo) # eu sei, está mal organizado, vamos ter mais paciencia com o coleguinha?
 
     return
 
@@ -379,7 +411,7 @@ def br_arg_ultimas_partidas(compericao_df, time, temporada_escolhida):
 
 def bra_arg_analie(competicao_df, competicao_escolhida, time, temporada_escolhida):
     # maior sequencia de vitorias
-    colunas = ['Partidas', 'Gols', 'Gols por Partida', 'Partidas Ganhas', 'Aproveitamento (vitória)', 'Partidas Perdidas']
+    colunas = ['Partidas', 'Partidas Ganhas', 'Gols', 'Gols por Partida', 'Aproveitamento (vitória)', 'Partidas Perdidas', 'Gols Sofridos', 'Gols Sofridos por Partida']
     dados = {
         'casa':{},
         'visitante':{}
