@@ -1,7 +1,7 @@
 # Análise de Ligas e Times de Futebol
 Um projeto perfeito para as pessoas que buscam saber um pouco mais sobre estatísticas de times e ligas de futebol concentradas em apenas uma aplicação.
 
-Se porventura mostrar um erro ao acessar a as tabelas, muito provavelmente o site de acesso às informações atualizadas está fora do ar temporariamente.
+***Se porventura mostrar um erro ao acessar a as tabelas, muito provavelmente o site de acesso às informações atualizadas está fora do ar temporariamente.***
 
 ## Sobre
 E se uma pessoa pretende saber um pouco mais sobre times de ligas de futebol como estatísticas ou histórico de confronto? 
@@ -10,12 +10,13 @@ Este projeto visa concentrar essas informações em um só lugar com uma interfa
 
 Ao acessar o link abaixo, talvez seja necessário 'acordar' o site, para isso, basta clicar no botão que aparecerá na tela e aguardar o carregamento. Se demorar demais, reinicie a página.
 
-Link para acessar a página: [futebol-estatisticas.streamlit.app](https://futebolestatisticas.streamlit.app/) 
+Link para acessar o site de análise: [futebol-estatisticas.streamlit.app](https://futebolestatisticas.streamlit.app/) 
 
 ## Demonstração (as imagens não mostram todos os dados)
  - Histórico do confronto entre Flamengo x Corinthians:
    
 <img width="1539" height="900" alt="Captura de tela de 2026-08-29 19-10-31" src="https://github.com/user-attachments/assets/a73ddbbb-b87f-4b46-9754-0d1667e5bcc9" />
+
 
  - Histórico do Arsenal na temporada de 25/26:
  
@@ -23,12 +24,11 @@ Link para acessar a página: [futebol-estatisticas.streamlit.app](https://futebo
 
 ## Funcionalidades
  - É possível verificar as ligas da primeira divisão dos seguintes países: Brasil, Alemanha, França, Itália, Inglaterra, Espanha, Argentina, Portugal e outros.
- - Tabela final da classificação acordo com a liga.
+ - Tabela atualizada da classificação acordo com a liga.
  - Histórico de confronto direto entre times de mesma liga, como: últimas 8 partidas entre os dois times, média de gols, média de cartão amarelo e muito mais.
- - Detalhes de um determinado time como: total de gols em casa e como visitante, maior sequência de vitórias, maior goleada e outras estatísticas.
- - Análise por juízes como: nome, média de faltas e cartões (disponibilizada apenas para a Premier League, Inglaterra).
+ - Detalhes de um determinado time: total de gols em casa e como visitante, maior sequência de vitórias, maior goleada e outras estatísticas.
+ - Análise por juízes: nome, média de faltas e cartões (disponibilizada apenas para a Premier League, Inglaterra).
 
-***Por algum motivo não foi disponibilizado a primeira divisão da Alemanha para a temporada atual, mas o histórico das partidas estão disponíveis***
 ## Tecnologias
  - Python (Pandas e Streamlit)
 
