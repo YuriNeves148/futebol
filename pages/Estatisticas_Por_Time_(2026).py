@@ -7,9 +7,9 @@ import acessa_datasets
 
 
 def analise_por_time(competicao_df, time, escolhe_temporada):
-    colunas = ['Partidas','Gols', 'Gols por Partida', 'Partidas Ganhas', 'Partidas Perdidas', 'Média de chutes', 
-               'Média de Chutes ao Gol', 'Cartão Amarelo (média)', 'Cartão Vermelho (média)', 
-               'Faltas Cometidas (média)', 'Escanteios (média)', 'Gols 1° Tempo'
+    colunas = ['Partidas','Gols', 'Gols 1° Tempo por Partida', 'Gols por Partida', 'Aproveitamento (gols marcados)', 'Partidas Ganhas', 'Gols Sofridos', 'Gols Sofridos por Partida', 'Partidas Perdidas', 'Média de chutes', 
+               'Média de Chutes ao Gol', 'Aproveitamento (gols marcados)','Cartão Amarelo (média)', 'Cartão Vermelho (média)', 
+               'Faltas Cometidas (média)', 'Escanteios (média)'
                ]      
     dados = {
         'casa':{},
@@ -29,11 +29,21 @@ def gerenciamento_analise_time(competicao_df, filtro, time, escolhe_temporada):
         partidas_casa = competicao_df.loc[competicao_df['HomeTeam'] == time].groupby('HomeTeam').size().get(time, 0)
         partidas_visitante =  competicao_df.loc[competicao_df['AwayTeam'] == time].groupby('AwayTeam').size().get(time, 0)
         return partidas_casa, partidas_visitante
+
     # gols
     if filtro == 'Gols':
         gols_casa = competicao_df.groupby('HomeTeam')['FTHG'].sum().get(time, 0)
         gols_visitante = competicao_df.groupby('AwayTeam')['FTAG'].sum().get(time, 0)
         return gols_casa, gols_visitante
+    
+    # gos primeiro tempo
+    if filtro == 'Gols 1° Tempo por Partida':
+        casa = competicao_df.groupby('HomeTeam')['HTHG'].mean().get(time, 0)
+        fora = competicao_df.groupby('AwayTeam')['HTAG'].mean().get(time, 0)
+        casa = f'{casa:.2f}'
+        fora = f'{fora:.2f}'
+        return casa, fora
+    
     # gols por partida
     if filtro == 'Gols por Partida':
         gols_casa = competicao_df.groupby('HomeTeam')['FTHG'].mean().get(time, 0)
@@ -47,12 +57,26 @@ def gerenciamento_analise_time(competicao_df, filtro, time, escolhe_temporada):
         ganhas_casa = competicao_df.loc[competicao_df['FTR'] == 'H'].groupby('HomeTeam')['FTR'].size().get(time, 0)
         ganhas_fora = competicao_df.loc[competicao_df['FTR'] == 'A'].groupby('AwayTeam')['FTR'].size().get(time, 0)
         return ganhas_casa, ganhas_fora
+    
+
+    if filtro == 'Gols Sofridos':
+        sofrido_casa = competicao_df.groupby('HomeTeam')['FTAG'].sum().get(time, 0)
+        sofrido_fora = competicao_df.groupby('AwayTeam')['FTHG'].sum().get(time, 0)
+        return sofrido_casa, sofrido_fora
+    
+    if filtro == 'Gols Sofridos por Partida':
+        sofrido_casa = competicao_df.groupby('HomeTeam')['FTAG'].mean().get(time, 0)
+        sofrido_casa = f'{sofrido_casa:.2f}'
+        sofrido_fora = competicao_df.groupby('AwayTeam')['FTHG'].mean().get(time, 0)
+        sofrido_fora = f'{sofrido_fora:.2f}'
+        return sofrido_casa, sofrido_fora
 
     # partidas perdidas
     if filtro == 'Partidas Perdidas':
         perdida_casa = competicao_df.loc[competicao_df['FTR'] == 'A'].groupby('HomeTeam').size().get(time, 0)
+        perdida_casa = f'{perdida_casa:.0f}'
         perdida_visit = competicao_df.loc[competicao_df['FTR'] == 'H'].groupby('AwayTeam').size().get(time, 0)
-
+        perdida_visit = f'{perdida_visit:.0f}'
         return perdida_casa, perdida_visit
         
     # Chutes
@@ -71,6 +95,19 @@ def gerenciamento_analise_time(competicao_df, filtro, time, escolhe_temporada):
         chute_fora = f'{chute_fora:.2f}'
         return chute_casa, chute_fora
     
+    if filtro == 'Aproveitamento (gols marcados)':
+        # quantidade de chutes dividido pela quantidade de gols marcados
+        chutes_casa_ao_gol = competicao_df.groupby('HomeTeam')['HST'].sum().get(time, 0)
+        gols_casa_ = competicao_df.groupby('HomeTeam')['FTHG'].sum().get(time, 0)
+        print("\n\n\n", chutes_casa_ao_gol, gols_casa_)
+        apr_casa = (gols_casa_ / chutes_casa_ao_gol) * 100
+
+        chutes_visitante_ao_gol = competicao_df.groupby('AwayTeam')['AST'].sum().get(time, 0)
+        gols_visitante_ = competicao_df.groupby('AwayTeam')['FTAG'].sum().get(time, 0)
+        apr_fora = (gols_visitante_ / chutes_visitante_ao_gol) * 100
+        
+        return f'{apr_casa:.2f}%', f'{apr_fora:.2f}%'
+
     # media de amarelo
     if filtro == 'Cartão Amarelo (média)':
         casa = competicao_df.groupby('HomeTeam')['HY'].mean().get(time, 0)
@@ -103,21 +140,6 @@ def gerenciamento_analise_time(competicao_df, filtro, time, escolhe_temporada):
         fora = f'{fora:.2f}'
         return casa, fora
     
-    # gos primeiro tempo
-    if filtro == 'Gols 1° Tempo':
-        casa = competicao_df.groupby('HomeTeam')['HTHG'].mean().get(time, 0)
-        fora = competicao_df.groupby('AwayTeam')['HTAG'].mean().get(time, 0)
-        casa = f'{casa:.2f}'
-        fora = f'{fora:.2f}'
-        return casa, fora
-    
-    # gos segundo tempo
-    if filtro == 'Gols 1° Tempo':
-        casa = competicao_df.groupby('HomeTeam')['HTHG'].mean().get(time, 0)
-        fora = competicao_df.groupby('AwayTeam')['HTAG'].mean().get(time, 0)
-        casa = f'{casa:.2f}'
-        fora = f'{fora:.2f}'
-        return casa, fora
 
 def sequencia_vitorias_derrotas(competicao_df, time, escolhe_temporada):
     jogos = competicao_df.loc[(competicao_df['HomeTeam'] == time) | (competicao_df['AwayTeam'] == time)]
@@ -182,21 +204,21 @@ def ultimas_partidas(compericao_df, time, escolhe_temporada):
     partidas_casa['RESULTADO'] = "EMPATE"
     partidas_casa.loc[partidas_casa['Gols Casa'] > partidas_casa['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
     partidas_casa.loc[partidas_casa['Gols Casa'] < partidas_casa['Gols Visitante'], 'RESULTADO'] = 'DERROTA'    
-    partidas_casa = partidas_casa.head()
+    partidas_casa = partidas_casa.tail()
     # historico jogando fora de casa
     partidas_fora = compericao_df[['Date' ,'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[compericao_df['AwayTeam'] == time]
     partidas_fora= partidas_fora.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
     partidas_fora['RESULTADO'] = "EMPATE"
     partidas_fora.loc[partidas_fora['Gols Casa'] > partidas_fora['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
     partidas_fora.loc[partidas_fora['Gols Casa'] < partidas_fora['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
-    partidas_fora = partidas_fora.head()
+    partidas_fora = partidas_fora.tail()
     # historico das 5 utimas partidas
     ultimas_partidas = compericao_df[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[(compericao_df['HomeTeam'] == time) | (compericao_df['AwayTeam'] == time)]
     ultimas_partidas = ultimas_partidas.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
     ultimas_partidas['RESULTADO'] = "EMPATE"
     ultimas_partidas.loc[ultimas_partidas['Gols Casa'] > ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
     ultimas_partidas.loc[ultimas_partidas['Gols Casa'] < ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
-    ultimas_partidas = ultimas_partidas.head()
+    ultimas_partidas = ultimas_partidas.tail()
 
     # CONTINUAR FORMATANDO DATAS ***
     st.write("#### Últimas 5 partidas:")
@@ -275,6 +297,19 @@ def br_arg_gerenciamento_por_time(competicao_df, filtro, time, temporada_escolhi
         partidas_visitante =  competicao_df.loc[competicao_df['Away'] == time].groupby('Away').size().get(time, 0)
         return partidas_casa, partidas_visitante
     
+    if filtro == 'Aproveitamento (vitória)':
+        # quantidade de chutes dividido pela quantidade de gols marcados
+        jogos_casa = competicao_df.loc[competicao_df['Home'] == time].groupby('Home').size().get(time, 0)
+        vitoria_casa = competicao_df.loc[(competicao_df['Home'] == time) & (competicao_df['Res'] == 'H')].groupby('Home').size().get(time, 0)
+        apr_casa = (vitoria_casa / jogos_casa) * 100
+
+        jogos_visi = competicao_df.loc[competicao_df['Away'] == time].groupby('Away').size().get(time, 0)
+        vitoria_visi = competicao_df.loc[(competicao_df['Away'] == time) & (competicao_df['Res'] == 'A')].groupby('Away').size().get(time, 0)
+        apr_visi = (vitoria_visi / jogos_visi) * 100
+        
+        return f'{apr_casa:.2f}%', f'{apr_visi:.2f}%'
+
+
 def br_arg_goleada(competicao_df, time):
     maior_diferenca = 0
     armazena_diferenca = 0
@@ -344,7 +379,7 @@ def br_arg_ultimas_partidas(compericao_df, time, temporada_escolhida):
 
 def bra_arg_analie(competicao_df, competicao_escolhida, time, temporada_escolhida):
     # maior sequencia de vitorias
-    colunas = ['Partidas', 'Gols', 'Gols por Partida', 'Partidas Ganhas', 'Partidas Perdidas']
+    colunas = ['Partidas', 'Gols', 'Gols por Partida', 'Partidas Ganhas', 'Aproveitamento (vitória)', 'Partidas Perdidas']
     dados = {
         'casa':{},
         'visitante':{}
