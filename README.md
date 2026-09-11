@@ -22,7 +22,7 @@ Link para acessar a página: [futebol-estatisticas.streamlit.app](https://futebo
 <img width="1699" height="863" alt="Captura de tela de 2026-09-11 09-17-29" src="https://github.com/user-attachments/assets/785555c1-7cbb-4877-a822-f33adaa5f295" />
 
 ## Funcionalidades
- - É possível verificar as ligas da primeira divisão dos seguintes países: Brasil, Alemanha, França, Itália, Inglaterra, Espanha e outros.
+ - É possível verificar as ligas da primeira divisão dos seguintes países: Brasil, Alemanha, França, Itália, Inglaterra, Espanha, Argentina, Portugal e outros.
  - Tabela final da classificação acordo com a liga.
  - Histórico de confronto direto entre times de mesma liga, como: últimas 8 partidas entre os dois times, média de gols, média de cartão amarelo e muito mais.
  - Detalhes de um determinado time como: total de gols em casa e como visitante, maior sequência de vitórias, maior goleada e outras estatísticas.
