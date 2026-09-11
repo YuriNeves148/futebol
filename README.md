@@ -1,18 +1,18 @@
 # Análise de Ligas e Times de Futebol
 Um projeto perfeito para as pessoas que buscam saber um pouco mais sobre estatísticas de times e ligas de futebol concentradas em apenas uma aplicação.
 
-***Se porventura mostrar um erro ao acessar a as tabelas, muito provavelmente o site de acesso às informações atualizadas está fora do ar temporariamente.***
+***Se porventura mostrar um erro ao acessar as tabelas, muito provavelmente o site de acesso às informações atualizadas está fora do ar temporariamente.***
 
 ## Sobre
 E se uma pessoa pretende saber um pouco mais sobre times de ligas de futebol como estatísticas ou histórico de confronto? 
-Essa pessoa conseguiria essas informações na internet, mas para isso ela deve acessar vários sites diferentes para conseguir essas informações.
+Essa pessoa conseguiria essas informações na internet, mas para isso ela deve acessar vários sites diferentes para conseguir tais informações.
 Este projeto visa concentrar essas informações em um só lugar com uma interface amigável e rica em detalhes.
 
 Ao acessar o link abaixo, talvez seja necessário 'acordar' o site, para isso, basta clicar no botão que aparecerá na tela e aguardar o carregamento. Se demorar demais, reinicie a página.
 
 Link para acessar o site de análise: [futebol-estatisticas.streamlit.app](https://futebolestatisticas.streamlit.app/) 
 
-## Demonstração (as imagens não mostram todos os dados)
+## Demonstração (as imagens não mostram todos os dados disponíveis)
  - Histórico do confronto entre Flamengo x Corinthians:
    
 <img width="1539" height="900" alt="Captura de tela de 2026-08-29 19-10-31" src="https://github.com/user-attachments/assets/a73ddbbb-b87f-4b46-9754-0d1667e5bcc9" />
