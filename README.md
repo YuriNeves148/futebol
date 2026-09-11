@@ -17,8 +17,9 @@ Link para acessar a página: [futebol-estatisticas.streamlit.app](https://futebo
    
 <img width="1539" height="900" alt="Captura de tela de 2026-08-29 19-10-31" src="https://github.com/user-attachments/assets/a73ddbbb-b87f-4b46-9754-0d1667e5bcc9" />
 
- - Histórico do Arsenal na temporada de 26/27:
-<img width="1539" height="900" alt="Captura de tela de 2026-08-29 19-11-33" src="https://github.com/user-attachments/assets/ac4b8e4e-7397-4010-b3ea-0f9fd3444156" />
+ - Histórico do Arsenal na temporada de 25/26:
+ 
+<img width="1699" height="863" alt="Captura de tela de 2026-09-11 09-17-29" src="https://github.com/user-attachments/assets/785555c1-7cbb-4877-a822-f33adaa5f295" />
 
 ## Funcionalidades
  - É possível verificar as ligas da primeira divisão dos seguintes países: Brasil, Alemanha, França, Itália, Inglaterra, Espanha e outros.
