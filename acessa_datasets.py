@@ -96,28 +96,16 @@ escocia_2425_df['Temporada'] = "24/25"
 escocia_2324_df['Temporada'] = "23/24"
 escocia_2627_df['Temporada'] = "26/27"
 
-noruega_2526_df = pd.read_csv('datasets/noruega_2526.csv')
-noruega_2526_df = noruega_2526_df[['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR','HTHG','HTAG','HTR','HS','AS','HST','AST','HF','AF','HC','AC','HY','AY','HR','AR']]
-noruega_2526_df['Date'] = pd.to_datetime(noruega_2526_df['Date'], format='%d/%m/%Y')
-noruega_2425_df = pd.read_csv('datasets/noruega_2425.csv')
-noruega_2425_df = noruega_2425_df[['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR','HTHG','HTAG','HTR','HS','AS','HST','AST','HF','AF','HC','AC','HY','AY','HR','AR']]
-noruega_2425_df['Date'] = pd.to_datetime(noruega_2425_df['Date'], format='%d/%m/%Y')
-noruega_2423_df = pd.read_csv('datasets/noruega_2324.csv')
-noruega_2423_df = noruega_2423_df[['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR','HTHG','HTAG','HTR','HS','AS','HST','AST','HF','AF','HC','AC','HY','AY','HR','AR']]
-noruega_2423_df['Date'] = pd.to_datetime(noruega_2423_df['Date'], format='%d/%m/%Y')
-noruega_2526_df['Temporada'] = "25/26"
-noruega_2425_df['Temporada'] = "24/25"
-noruega_2423_df['Temporada'] = "23/24"
-
 portugal_2627_df = pd.read_csv(url.portugla_1)
-portugal_2627_df['Date'] = pd.to_datetime(portugal_2627_df['Date'], format='%d/%m/%Y')
-portugal_2526_df = pd.read_csv('datasets/noruega_2526.csv')
+portugal_2627_df = portugal_2627_df[['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR','HTHG','HTAG','HTR','HS','AS','HST','AST','HF','AF','HC','AC','HY','AY','HR','AR']]
+portugal_2627_df['Date'] = pd.to_datetime(portugal_2627_df['Date'], format='%d/%m/%Y') 
+portugal_2526_df = pd.read_csv('datasets/portugal_2526.csv')
 portugal_2526_df = portugal_2526_df[['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR','HTHG','HTAG','HTR','HS','AS','HST','AST','HF','AF','HC','AC','HY','AY','HR','AR']]
 portugal_2526_df['Date'] = pd.to_datetime(portugal_2526_df['Date'], format='%d/%m/%Y')
-portugal_2425_df = pd.read_csv('datasets/noruega_2425.csv')
+portugal_2425_df = pd.read_csv('datasets/portugal_2425.csv')
 portugal_2425_df = portugal_2425_df[['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR','HTHG','HTAG','HTR','HS','AS','HST','AST','HF','AF','HC','AC','HY','AY','HR','AR']]
 portugal_2425_df['Date'] = pd.to_datetime(portugal_2425_df['Date'], format='%d/%m/%Y')
-portugal_2324_df = pd.read_csv('datasets/noruega_2324.csv')
+portugal_2324_df = pd.read_csv('datasets/portugal_2324.csv')
 portugal_2324_df = portugal_2324_df[['Date','HomeTeam','AwayTeam','FTHG','FTAG','FTR','HTHG','HTAG','HTR','HS','AS','HST','AST','HF','AF','HC','AC','HY','AY','HR','AR']]
 portugal_2324_df['Date'] = pd.to_datetime(portugal_2324_df['Date'], format='%d/%m/%Y')
 portugal_2526_df['Temporada'] = "25/26"
@@ -148,8 +136,8 @@ italia_df = pd.concat([italia_2425_df, italia_2526_df, italia_2324_df, italia_26
 holanda_df = pd.concat([holanda_2324_df, holanda_2425_df, holanda_2526_df, holanda_2627_df]) 
 bundesliga_df = pd.concat([bundesliga_2425_df, bundesliga_2526_df, bundesliga_2324_df, bundesliga_2627_df])
 ligue1_df = pd.concat([ligue1_2425_df, ligue1_2526_df, ligue1_2324_df, ligue1_2627_df])
-escocia_df = pd.concat([escocia_2526_df, escocia_2425_df, escocia_2324_df])
-noruega_df = pd.concat([noruega_2526_df, noruega_2425_df, noruega_2423_df])
+escocia_df = pd.concat([escocia_2526_df, escocia_2425_df, escocia_2324_df, escocia_2627_df])
 portugal_df = pd.concat([portugal_2526_df, portugal_2425_df, portugal_2324_df, portugal_2627_df])
+
 argentina_df = pd.concat([argentina_23_df, argentina_24_df, argentina_25_df, argentina_26_df])
 brasil_df = pd.concat([brasil_23_df, brasil_24_df, brasil_25_df, brasil_26_df])
