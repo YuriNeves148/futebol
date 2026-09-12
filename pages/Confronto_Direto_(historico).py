@@ -63,18 +63,44 @@ def estatisticas(competicao_df, time1, time2):
     return
 
 def historico(competicao_df, time1, time2):
-    partidas_df = competicao_df.loc[(( (competicao_df['HomeTeam'] == time1) | (competicao_df['AwayTeam'] == time1) ) 
-                             & ( (competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2) ) 
-                             )].copy()
-    partidas_df['Date'] = pd.to_datetime(partidas_df['Date'], dayfirst=True)
+    # convertendo tabela para o formato que será melhor trabalhado
+    padrao_df = competicao_df.copy()
+    padrao_df['Date'] = pd.to_datetime(competicao_df['Date'], dayfirst=True)
+    padrao_df = padrao_df.rename(columns={'Date':'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
     
-    # resumo ráido
-    st.write("#### Visão geral")
-    partidas_df = partidas_df.rename(columns={'Date':'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
-    partidas_df = partidas_df.sort_values('Data', ascending=False).head(8)
+    partidas_df = padrao_df.loc[(( (padrao_df['Casa'] == time1) | (padrao_df['Visitante'] == time1) ) 
+                             & ( (padrao_df['Casa'] == time2) | (padrao_df['Visitante'] == time2) ) 
+                             )]
+    
+    partidas_df = partidas_df.sort_values('Data', ascending=False).head(6)
+    partidas_df = partidas_df.copy()
     partidas_df['Data'] = partidas_df['Data'].dt.strftime('%d/%m/%Y')
+
+    # tabela inicial (todas as ultimas 8 partidas)
+    st.write("#### Visão geral")
     st.dataframe(partidas_df[['Data', 'Casa', 'Gols Casa','Visitante', 'Gols Visitante']], hide_index=True)
+
+
     return
+
+def historico_casa_visitante(competicao_df, time, casa=False, visitante=False):
+    padrao_df = competicao_df.copy()
+    padrao_df['Date'] = pd.to_datetime(competicao_df['Date'], dayfirst=True)
+    padrao_df = padrao_df.rename(columns={'Date':'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
+
+    # se selecionada CASA
+    if casa:
+        partidas_casa = padrao_df.loc[padrao_df['Casa'] == time].sort_values('Data', ascending=False).head(5).copy()
+        partidas_casa['Data'] = partidas_casa['Data'].dt.strftime('%d/%m/%Y')
+        st.dataframe(partidas_casa[['Data', 'Casa', 'Gols Casa','Visitante', 'Gols Visitante']], hide_index=True)
+    # se selecionada VISITANTE
+    elif visitante:
+        partidas_visitante = padrao_df.loc[padrao_df['Visitante'] == time].sort_values('Data', ascending=False).head(5).copy()
+        partidas_visitante['Data'] = partidas_visitante['Data'].dt.strftime('%d/%m/%Y')
+        st.dataframe(partidas_visitante[['Data', 'Casa', 'Gols Casa','Visitante', 'Gols Visitante']], hide_index=True)
+    return
+
+
 
 def historico_por_time(competicao_df, time1, time2):
     # ultimas 5 partidas de cada time
@@ -126,11 +152,34 @@ def historico_por_time(competicao_df, time1, time2):
 
     tabela_time1['Data'] = tabela_time1['Data'].dt.strftime('%d/%m/%Y')
     tabela_time2['Data'] = tabela_time2['Data'].dt.strftime('%d/%m/%Y')
-
+    
     st.write(f"#### Últimas 5 partidas do {time1}:")
+    coluna1, coluna2 = st.columns([1,1])
+    with coluna1:
+        casa = st.checkbox('Casa', key='casa_time1')
+        if casa:
+            historico_casa_visitante(competicao_df, time1, casa=True)
+    with coluna2:
+        visitante = st.checkbox('Visitante', key='visitante_time1')
+        if visitante:
+            historico_casa_visitante(competicao_df, time1, visitante=True)
+
+    geral = not (casa or visitante)
     st.dataframe(tabela_time1, hide_index=True)
+    
     st.write(f"#### Últimas 5 partidas do {time2}:")
+    coluna1, coluna2 = st.columns([1,1])
+    with coluna1:
+        casa = st.checkbox('Casa', key='casa_time2')
+        if casa:
+            historico_casa_visitante(competicao_df, time2, casa=True)
+    with coluna2:
+        visitante = st.checkbox('Visitante', key='visitante_time2')
+        if visitante:
+            historico_casa_visitante(competicao_df, time2, visitante=True)
     st.dataframe(tabela_time2, hide_index=True)
+
+
     return
 
 def time_por_competicao(comp_escolhida):    
