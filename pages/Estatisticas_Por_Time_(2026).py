@@ -204,21 +204,22 @@ def ultimas_partidas(compericao_df, time, escolhe_temporada):
     partidas_casa['RESULTADO'] = "EMPATE"
     partidas_casa.loc[partidas_casa['Gols Casa'] > partidas_casa['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
     partidas_casa.loc[partidas_casa['Gols Casa'] < partidas_casa['Gols Visitante'], 'RESULTADO'] = 'DERROTA'    
-    partidas_casa = partidas_casa.tail()
+    partidas_casa = partidas_casa.sort_values('Data', ascending=False).head()
     # historico jogando fora de casa
     partidas_fora = compericao_df[['Date' ,'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[compericao_df['AwayTeam'] == time]
     partidas_fora= partidas_fora.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
     partidas_fora['RESULTADO'] = "EMPATE"
-    partidas_fora.loc[partidas_fora['Gols Casa'] > partidas_fora['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
-    partidas_fora.loc[partidas_fora['Gols Casa'] < partidas_fora['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
-    partidas_fora = partidas_fora.tail()
+    partidas_fora.loc[partidas_fora['Gols Casa'] > partidas_fora['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
+    partidas_fora.loc[partidas_fora['Gols Casa'] < partidas_fora['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
+    
+    partidas_fora = partidas_fora.sort_values('Data', ascending=False).head()
     # historico das 5 utimas partidas
     ultimas_partidas = compericao_df[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].loc[(compericao_df['HomeTeam'] == time) | (compericao_df['AwayTeam'] == time)]
     ultimas_partidas = ultimas_partidas.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
     ultimas_partidas['RESULTADO'] = "EMPATE"
     ultimas_partidas.loc[ultimas_partidas['Gols Casa'] > ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
     ultimas_partidas.loc[ultimas_partidas['Gols Casa'] < ultimas_partidas['Gols Visitante'], 'RESULTADO'] = 'DERROTA'
-    ultimas_partidas = ultimas_partidas.tail()
+    ultimas_partidas = ultimas_partidas.sort_values('Data', ascending=False).head()
 
     # CONTINUAR FORMATANDO DATAS ***
     st.write("#### Últimas 5 partidas:")
@@ -451,7 +452,7 @@ def analise_por_juiz(competicao_df, escolhe_temporada):
     st.dataframe(tabela.sort_values(by='Jogos Apitados', ascending=False))
 
 def time_por_competicao(competicao_escolhida, temporada_escolhida):    
-    if competicao_escolhida == 'Premier League':
+    if competicao_escolhida == 'Inglaterra':
         if temporada_escolhida == '26/27':
             inglaterra_1 = pd.read_csv(url.inglaterra_1)
             inglaterra_1['Date'] = pd.to_datetime(inglaterra_1['Date'], format='%d/%m/%Y')
@@ -459,10 +460,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             inglaterra_1 = acessa_datasets.premier_2526_df
         elif temporada_escolhida == '24/25':
             inglaterra_1 = acessa_datasets.premier_2425_df
-
-        else:
+        elif temporada_escolhida == '23/24':
             inglaterra_1 = acessa_datasets.premier_2324_df
-
+        elif temporada_escolhida == '23/24 até 26/27':
+            inglaterra_1 = acessa_datasets.premier_df
         escolhe_time = st.selectbox('Escolha um time da Premier League', inglaterra_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(inglaterra_1, escolhe_time, escolhe_temporada)
@@ -471,20 +472,23 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         ultimas_partidas(inglaterra_1, escolhe_time, escolhe_temporada)
         st.write("## Análise por Juiz")
         analise_por_juiz(inglaterra_1, escolhe_temporada)
-    elif competicao_escolhida == 'Brasileirão':
+    elif competicao_escolhida == 'Brasil':
         if temporada_escolhida == '26/27':
             brasileirao = acessa_datasets.brasil_26_df
         elif temporada_escolhida == '25/26':
             brasileirao = acessa_datasets.brasil_25_df
         elif temporada_escolhida == '24/25':
             brasileirao = acessa_datasets.brasil_24_df
-        else:
+        elif temporada_escolhida == '23/24':
             brasileirao = acessa_datasets.brasil_23_df
+        elif temporada_escolhida == '23/24 até 26/27':
+            brasileirao = acessa_datasets.brasil_df
+
         escolhe_time = st.selectbox('Escolha um time do Brasileirão:', brasileirao['Home'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         bra_arg_analie(brasileirao, competicao_escolhida, escolhe_time, temporada_escolhida)
         br_arg_ultimas_partidas(brasileirao, escolhe_time, temporada_escolhida)
-    elif competicao_escolhida == 'La Liga':
+    elif competicao_escolhida == 'Espanha':
         if temporada_escolhida == '26/27':
             espanha_1 = pd.read_csv(url.espanha_1)  
             espanha_1['Date'] = pd.to_datetime(espanha_1['Date'], format='%d/%m/%Y')  
@@ -492,16 +496,18 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             espanha_1 = acessa_datasets.laliga_2526_df
         elif temporada_escolhida == '24/25':
             espanha_1 = acessa_datasets.laliga_2425_df
-        else:
+        elif temporada_escolhida == '23/24':
             espanha_1 = acessa_datasets.laliga_2324_df
-        
+        elif temporada_escolhida == '23/24 até 26/27':
+            espanha_1 = acessa_datasets.laliga_df
+
         escolhe_time = st.selectbox('Escolha um time da competição da La Liga', espanha_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(espanha_1 ,escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(espanha_1, escolhe_time, temporada_escolhida)
         goleada(espanha_1, escolhe_time, temporada_escolhida)
         ultimas_partidas(espanha_1, escolhe_time, temporada_escolhida)
-    elif competicao_escolhida == 'Bundesliga':
+    elif competicao_escolhida == 'Alemanha':
         if temporada_escolhida == '26/27':
             bundesliga = pd.read_csv(url.bundesliga)
             bundesliga['Date'] = pd.to_datetime(bundesliga['Date'],  format='%d/%m/%Y')
@@ -509,8 +515,11 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             bundesliga = acessa_datasets.bundesliga_2526_df
         elif temporada_escolhida == '24/25':
             bundesliga = acessa_datasets.bundesliga_2425_df
-        else:
+        elif temporada_escolhida == '23/24':
             bundesliga = acessa_datasets.bundesliga_2324_df
+        elif temporada_escolhida == '23/24 até 26/27':
+            bundesliga = acessa_datasets.bundesliga_df
+
         escolhe_time = st.selectbox('Escolha um time da Bundeliga', bundesliga['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(bundesliga, escolhe_time, escolhe_temporada)
@@ -525,8 +534,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             italia_1 = acessa_datasets.italia_2526_df
         elif temporada_escolhida == '24/25':
             italia_1 = acessa_datasets.italia_2425_df
-        else:
+        elif temporada_escolhida == '23/24':
             italia_1 = acessa_datasets.italia_2324_df
+        elif temporada_escolhida == '23/24 até 26/27':
+            italia_1 = acessa_datasets.italia_df
 
         escolhe_time = st.selectbox('Escolha um time da liga Italiana', italia_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
@@ -534,7 +545,7 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         sequencia_vitorias_derrotas(italia_1, escolhe_time, escolhe_temporada)
         goleada(italia_1, escolhe_time, escolhe_temporada)
         ultimas_partidas(italia_1, escolhe_time, escolhe_temporada)
-    elif competicao_escolhida == 'Ligue 1':
+    elif competicao_escolhida == 'França':
         if temporada_escolhida == '26/27':
             df = pd.read_csv(url.franca_1)
             df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
@@ -542,9 +553,11 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             df = acessa_datasets.ligue1_2526_df
         elif temporada_escolhida == '24/25':
             df = acessa_datasets.ligue1_2425_df
-        else:
-            df = acessa_datasets.ligue1_2324_df
-        
+        elif temporada_escolhida == '23/24':
+            df = acessa_datasets.italia_2324_df
+        elif temporada_escolhida == '23/24 até 26/27':
+            df = acessa_datasets.ligue1_df
+                
         escolhe_time = st.selectbox('Escolha um time da Ligue 1:', df['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(df, escolhe_time, escolhe_temporada)
@@ -559,8 +572,11 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             df = acessa_datasets.holanda_2526_df
         elif temporada_escolhida == '24/25':
             df = acessa_datasets.holanda_2425_df
-        else:
+        elif temporada_escolhida == '23/24':
             df = acessa_datasets.holanda_2324_df
+        elif temporada_escolhida == '23/24 até 26/27':
+            df = acessa_datasets.holanda_df
+
         
         escolhe_time = st.selectbox('Escolha um time da Holanda:', df['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
@@ -576,8 +592,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             portugla_1 = acessa_datasets.portugal_2526_df
         elif temporada_escolhida == '24/25':
             portugla_1 = acessa_datasets.portugal_2425_df
-        else:
+        elif temporada_escolhida == '23/24':
             portugla_1 = acessa_datasets.portugal_2324_df
+        elif temporada_escolhida == '23/24 até 26/27':
+            portugla_1 = acessa_datasets.portugal_df
 
         escolhe_time = st.selectbox('Escolha um time de Portugal:', portugla_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
@@ -593,8 +611,11 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             escocia_1 = acessa_datasets.escocia_2526_df
         elif temporada_escolhida == '24/25':
             escocia_1 = acessa_datasets.escocia_2425_df
-        else:
+        elif temporada_escolhida == '23/24':
             escocia_1 = acessa_datasets.escocia_2324_df
+        elif temporada_escolhida == '23/24 até 26/27':
+            escocia_1 = acessa_datasets.escocia_df
+
         escolhe_time = st.selectbox('Escolha um time da Esócia:', escocia_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         analise_por_time(escocia_1, escolhe_time, temporada_escolhida)
@@ -609,8 +630,11 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             argentina_1 = acessa_datasets.argentina_25_df
         elif temporada_escolhida == '24/25':
             argentina_1 = acessa_datasets.argentina_24_df
-        else:
+        elif temporada_escolhida == '23/24':
             argentina_1 = acessa_datasets.argentina_23_df
+        elif temporada_escolhida == '23/24 até 26/27':
+            argentina_1 = acessa_datasets.argentina_df
+
         escolhe_time = st.selectbox('Escolha um time da Argentina:', argentina_1['Home'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         bra_arg_analie(argentina_1, competicao_escolhida, escolhe_time, temporada_escolhida)  
@@ -621,8 +645,8 @@ st.write("<h1 style='text-align:center;'> Análise do Time por Temporada </h1>",
 st.write("### Escolha a competição e o time pertencente: ")
 
 # selecionar competicao e seus respectivos times
-escolhe_temporada = st.selectbox("Escolha a temporada: ", ["26/27", "25/26", "24/25", "23/24"])
-competicoes_ = ['Premier League', 'Brasileirão', 'La Liga', 'Bundesliga', 'Italia', 'Ligue 1', 'Holanda', 'Portugal', 'Escocia', 'Argentina']
+escolhe_temporada = st.selectbox("Escolha a temporada: ", ["26/27", "25/26", "24/25", "23/24", "23/24 até 26/27"])
+competicoes_ = ['Inglaterra', 'Brasil', 'Espanha', 'Alemanha', 'Italia', 'França', 'Holanda', 'Portugal', 'Escocia', 'Argentina']
 escolhe_comp = st.selectbox("Escolha a competição: ",competicoes_)
 time_por_competicao(escolhe_comp, escolhe_temporada)
 
