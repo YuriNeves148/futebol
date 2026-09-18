@@ -3,7 +3,8 @@ import pandas as pd
 import url
 from datetime import datetime
 import datetime as dt
-import acessa_datasets
+import acessa_datasets, analise_grafica
+import matplotlib.pyplot as plt
 
 
 def analise_por_time(competicao_df, time, escolhe_temporada):
@@ -99,7 +100,6 @@ def gerenciamento_analise_time(competicao_df, filtro, time, escolhe_temporada):
         # quantidade de chutes dividido pela quantidade de gols marcados
         chutes_casa_ao_gol = competicao_df.groupby('HomeTeam')['HST'].sum().get(time, 0)
         gols_casa_ = competicao_df.groupby('HomeTeam')['FTHG'].sum().get(time, 0)
-        print("\n\n\n", chutes_casa_ao_gol, gols_casa_)
         apr_casa = (gols_casa_ / chutes_casa_ao_gol) * 100
 
         chutes_visitante_ao_gol = competicao_df.groupby('AwayTeam')['AST'].sum().get(time, 0)
@@ -139,7 +139,6 @@ def gerenciamento_analise_time(competicao_df, filtro, time, escolhe_temporada):
         casa = f'{casa:.2f}'
         fora = f'{fora:.2f}'
         return casa, fora
-    
 
 def sequencia_vitorias_derrotas(competicao_df, time, escolhe_temporada):
     jogos = competicao_df.loc[(competicao_df['HomeTeam'] == time) | (competicao_df['AwayTeam'] == time)]
@@ -231,17 +230,61 @@ def ultimas_partidas(compericao_df, time, escolhe_temporada):
 
     return
 
+def grafico_gols(time, competicao_df):
+    # grafico em linha (dot) gols feitos e sofridos ao longo das tempoadas
+    temporadas = ['23/24', '24/25', '25/26', '26/27']
+
+    temp_2324 = competicao_df[competicao_df['Temporada'] == '23/24'].copy()
+    temp_2425 = competicao_df[competicao_df['Temporada'] == '24/25'].copy()
+    temp_2526 = competicao_df[competicao_df['Temporada'] == '25/26'].copy()
+    temp_2627 = competicao_df[competicao_df['Temporada'] == '26/27'].copy()
+
+    casa_2324 = temp_2324['HomeTeam'] == time
+    visi_2324 = temp_2324['AwayTeam'] == time
+    casa_2425 = temp_2425['HomeTeam'] == time
+    visi_2425 = temp_2425['AwayTeam'] == time
+    casa_2526 = temp_2526['HomeTeam'] == time
+    visi_2526 = temp_2526['AwayTeam'] == time
+    casa_2627 = temp_2627['HomeTeam'] == time
+    visi_2627 = temp_2627['AwayTeam'] == time
+
+    # gols feitos por temporada
+    gols_marc_2324 = int( temp_2324.loc[ casa_2324, 'FTHG' ].sum() + temp_2324.loc[ visi_2324, 'FTAG' ].sum() )
+    gols_sof_2324 = int( temp_2324.loc[ casa_2324, 'FTAG' ].sum() + temp_2324.loc[ visi_2324, 'FTHG' ].sum() )
+    gols_marc_2425 = int( temp_2425.loc[ casa_2425, 'FTHG' ].sum() + temp_2425.loc[ visi_2425, 'FTAG' ].sum() )
+    gols_sof_2425 = int( temp_2425.loc[ casa_2425, 'FTAG' ].sum() + temp_2425.loc[ visi_2425, 'FTHG' ].sum() )
+    gols_marc_2526 = int( temp_2526.loc[ casa_2526, 'FTHG' ].sum() + temp_2526.loc[ visi_2526, 'FTAG' ].sum() )
+    gols_sof_2526 = int( temp_2526.loc[ casa_2526, 'FTAG' ].sum() + temp_2526.loc[ visi_2526, 'FTHG' ].sum() )
+    gols_marc_2627 = int( temp_2627.loc[ casa_2627, 'FTHG' ].sum() + temp_2627.loc[ visi_2627, 'FTAG' ].sum() )
+    gols_sof_2627 = int( temp_2627.loc[ casa_2627, 'FTAG' ].sum() + temp_2627.loc[ visi_2627, 'FTHG' ].sum() )
+    
+    gols_marc_list = [gols_marc_2324, gols_marc_2425, gols_marc_2526, gols_marc_2627]
+    gols_sof_list = [gols_sof_2324, gols_sof_2425, gols_sof_2526, gols_sof_2627]
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(temporadas, gols_marc_list, marker='s', color='green', label='Gols marcados')
+    plt.plot(temporadas, gols_sof_list, marker='o', color='darkred', label='Gols sofridos')
+    plt.grid(True, axis='y', alpha=0.6)
+    plt.xlabel('Temporadas', fontsize='16')
+    plt.ylabel('Gols', fontsize='16')
+    plt.ylim(bottom=0, top=max(max(gols_marc_list), max(gols_marc_list)))
+    plt.yticks(range(0, max(max(gols_marc_list), max(gols_marc_list)) + 20, 15))
+    # qtd de gols a cada dot
+    plt.title(f'Gols Marcados e Sofridos do $\\bf{{{time}}}$', fontsize='20')
+    for x, y in zip(temporadas, gols_marc_list):
+        plt.text(x, y+1.5, str(y), ha='center')
+    for x, y in zip(temporadas, gols_sof_list):
+        plt.text(x, y+1.5, str(y), ha='center')
+    
+    plt.tight_layout()
+    plt.legend(fontsize='14')
+    st.pyplot(plt.gcf())
+    
+    return
+
 # APENAS Brasil e Argentina
 def br_arg_sequencia_vit_der(competicao_df, time, temporada_escolhida):
-        #if temporada_escolhida == '26/27':
-        #    competicao_df = competicao_df.loc[competicao_df['Season'] == 2026]
-        #elif temporada_escolhida == '25/26':
-        #    competicao_df = competicao_df.loc[competicao_df['Season'] == 2025]
-        #elif temporada_escolhida == '24/25':
-        #    competicao_df = competicao_df.loc[competicao_df['Season'] == 2024]
-        #else:
-        #    competicao_df = competicao_df.loc[competicao_df['Season'] == 2023]
-        jogos = competicao_df.loc[(competicao_df['Home'] == time) | (competicao_df['Away'] == time)]
+        jogos = competicao_df.loc[(competicao_df['HomeTeam'] == time) | (competicao_df['AwayTeam'] == time)]
         maior_seq_vit = 0
         maior_seq_der = 0
         qtd_vitoria = 0
@@ -249,14 +292,14 @@ def br_arg_sequencia_vit_der(competicao_df, time, temporada_escolhida):
         # percorre cada jogo que o time jogou em formato de linha
         for _, linha in jogos.iterrows():
             # se ganhou dentro ou fora de casa
-            if (linha['Home'] == time and linha['Res'] == 'H') or (linha['Away'] == time and linha['Res'] == 'A'):
+            if (linha['HomeTeam'] == time and linha['FTR'] == 'H') or (linha['AwayTeam'] == time and linha['FTR'] == 'A'):
                 qtd_vitoria += 1
                 if qtd_vitoria > maior_seq_vit:
                         maior_seq_vit = qtd_vitoria    
             else:
                 qtd_vitoria = 0
             # se perdeu dentro ou fora de casa
-            if (linha['Home'] == time and linha['Res'] == 'A') or (linha['Away'] == time and linha['Res'] == 'H'):
+            if (linha['HomeTeam'] == time and linha['FTR'] == 'A') or (linha['AwayTeam'] == time and linha['FTR'] == 'H'):
                 qtd_derrota += 1
                 if qtd_derrota > maior_seq_der:
                         maior_seq_der = qtd_derrota    
@@ -268,103 +311,111 @@ def br_arg_sequencia_vit_der(competicao_df, time, temporada_escolhida):
 def br_arg_gerenciamento_por_time(competicao_df, filtro, time, temporada_escolhida):
     # gols
     if filtro == 'Gols':
-        gols_casa = competicao_df.groupby('Home')['HG'].sum().get(time, 0)
-        gols_visitante = competicao_df.groupby('Away')['AG'].sum().get(time, 0)
+        gols_casa = competicao_df.groupby('HomeTeam')['FTHG'].sum().get(time, 0)
+        gols_visitante = competicao_df.groupby('AwayTeam')['FTAG'].sum().get(time, 0)
         return int(gols_casa), int(gols_visitante)
     
     # gols por partida
     if filtro == 'Gols por Partida':
-        gols_casa = competicao_df.groupby('Home')['HG'].mean().get(time, 0)
-        gols_visitante = competicao_df.groupby('Away')['AG'].mean().get(time, 0)
+        gols_casa = competicao_df.groupby('HomeTeam')['FTHG'].mean().get(time, 0)
+        gols_visitante = competicao_df.groupby('AwayTeam')['FTAG'].mean().get(time, 0)
         gols_casa = f'{gols_casa:.2f}'
         gols_visitante = f'{gols_visitante:.2f}'
         return gols_casa, gols_visitante
     if filtro == 'Gols Sofridos':
-        gols_sofridos_casa = competicao_df.groupby('Home')['AG'].sum().get(time, 0)
-        gols_sofridos_visi = competicao_df.groupby('Away')['HG'].sum().get(time, 0)
+        gols_sofridos_casa = competicao_df.groupby('HomeTeam')['FTAG'].sum().get(time, 0)
+        gols_sofridos_visi = competicao_df.groupby('AwayTeam')['FTHG'].sum().get(time, 0)
 
         return f'{gols_sofridos_casa:.0f}', f'{gols_sofridos_visi:.0f}'
     
 
     if filtro == 'Gols Sofridos por Partida':
-        partidas_casa = competicao_df.loc[competicao_df['Home'] == time].groupby('Home').size().get(time, 0)
-        partidas_visitante =  competicao_df.loc[competicao_df['Away'] == time].groupby('Away').size().get(time, 0)
+        partidas_casa = competicao_df.loc[competicao_df['HomeTeam'] == time].groupby('HomeTeam').size().get(time, 0)
+        partidas_visitante =  competicao_df.loc[competicao_df['AwayTeam'] == time].groupby('AwayTeam').size().get(time, 0)
         
-        gols_sofridos_casa = competicao_df.groupby('Home')['AG'].sum().get(time, 0)
-        gols_sofridos_visi = competicao_df.groupby('Away')['HG'].sum().get(time, 0)
-
-        casa = gols_sofridos_casa / partidas_casa
-        visi = gols_sofridos_visi / partidas_visitante
-
+        gols_sofridos_casa = competicao_df.groupby('HomeTeam')['FTAG'].sum().get(time, 0)
+        gols_sofridos_visi = competicao_df.groupby('AwayTeam')['FTHG'].sum().get(time, 0)
+        if partidas_casa != 0:
+            casa = gols_sofridos_casa / partidas_casa
+        else:
+            casa = 0
+        if partidas_visitante != 0:
+            visi = gols_sofridos_visi / partidas_visitante
+        else:
+            visi = 0
         return f'{casa:.2f}', f'{visi:.2f}'
     
 
     # partidas ganhas
     if filtro == 'Partidas Ganhas':
-        ganhas_casa = competicao_df.loc[competicao_df['Res'] == 'H'].groupby('Home')['Res'].size().get(time, 0)
-        ganhas_fora = competicao_df.loc[competicao_df['Res'] == 'A'].groupby('Away')['Res'].size().get(time, 0)
+        ganhas_casa = competicao_df.loc[competicao_df['FTR'] == 'H'].groupby('FTR')['FTR'].size().get(time, 0)
+        ganhas_fora = competicao_df.loc[competicao_df['FTR'] == 'A'].groupby('FTR')['FTR'].size().get(time, 0)
         return ganhas_casa, ganhas_fora
 
     # partidas perdidas
     if filtro == 'Partidas Perdidas':
-        perdida_casa = competicao_df.loc[competicao_df['Res'] == 'A'].groupby('Home').size().get(time, 0)
-        perdida_visit = competicao_df.loc[competicao_df['Res'] == 'H'].groupby('Away').size().get(time, 0)
+        perdida_casa = competicao_df.loc[competicao_df['FTR'] == 'A'].groupby('HomeTeam').size().get(time, 0)
+        perdida_visit = competicao_df.loc[competicao_df['FTR'] == 'H'].groupby('AwayTeam').size().get(time, 0)
 
         return perdida_casa, perdida_visit
     # partidas
     if filtro == 'Partidas':
-        partidas_casa = competicao_df.loc[competicao_df['Home'] == time].groupby('Home').size().get(time, 0)
-        partidas_visitante =  competicao_df.loc[competicao_df['Away'] == time].groupby('Away').size().get(time, 0)
+        partidas_casa = competicao_df.loc[competicao_df['HomeTeam'] == time].groupby('HomeTeam').size().get(time, 0)
+        partidas_visitante =  competicao_df.loc[competicao_df['AwayTeam'] == time].groupby('AwayTeam').size().get(time, 0)
         return partidas_casa, partidas_visitante
     
     if filtro == 'Aproveitamento (vitória)':
         # quantidade de chutes dividido pela quantidade de gols marcados
-        jogos_casa = competicao_df.loc[competicao_df['Home'] == time].groupby('Home').size().get(time, 0)
-        vitoria_casa = competicao_df.loc[(competicao_df['Home'] == time) & (competicao_df['Res'] == 'H')].groupby('Home').size().get(time, 0)
-        apr_casa = (vitoria_casa / jogos_casa) * 100
+        jogos_casa = competicao_df.loc[competicao_df['HomeTeam'] == time].groupby('HomeTeam').size().get(time, 0)
+        vitoria_casa = competicao_df.loc[(competicao_df['HomeTeam'] == time) & (competicao_df['FTR'] == 'H')].groupby('HomeTeam').size().get(time, 0)
+        if jogos_casa != 0:
+            apr_casa = (vitoria_casa / jogos_casa) * 100
+        else:
+            apr_casa = 0
+        jogos_visi = competicao_df.loc[competicao_df['AwayTeam'] == time].groupby('AwayTeam').size().get(time, 0)
+        vitoria_visi = competicao_df.loc[(competicao_df['AwayTeam'] == time) & (competicao_df['FTR'] == 'A')].groupby('AwayTeam').size().get(time, 0)
+        if jogos_visi != 0:
+            apr_visi = (vitoria_visi / jogos_visi) * 100
+        else:
+            apr_visi = 0
 
-        jogos_visi = competicao_df.loc[competicao_df['Away'] == time].groupby('Away').size().get(time, 0)
-        vitoria_visi = competicao_df.loc[(competicao_df['Away'] == time) & (competicao_df['Res'] == 'A')].groupby('Away').size().get(time, 0)
-        apr_visi = (vitoria_visi / jogos_visi) * 100
-        
         return f'{apr_casa:.2f}%', f'{apr_visi:.2f}%'
-
 
 def br_arg_goleada(competicao_df, time):
     maior_diferenca = 0
     armazena_diferenca = 0
     placar = [0,0]
     # quando o time jogou 
-    jogos = competicao_df.loc[(competicao_df['Home'] == time) | (competicao_df['Away'] == time)]
+    jogos = competicao_df.loc[(competicao_df['HomeTeam'] == time) | (competicao_df['AwayTeam'] == time)]
     gols_sofridos = 0
     gols_feitos = 0
     for _, linha in jogos.iterrows():
         # ganhou a partida?
-        if (linha['Home'] == time and linha['Res'] == 'H'):  
+        if (linha['HomeTeam'] == time and linha['FTR'] == 'H'):  
             # armazena diferenca
-            armazena_diferenca = linha['HG'] - linha['AG']
+            armazena_diferenca = linha['FTHG'] - linha['FTAG']
             if armazena_diferenca > maior_diferenca:
                 maior_diferenca = armazena_diferenca
-                placar[0] = linha['HG']
-                placar[1] = linha['AG']
+                placar[0] = linha['FTHG']
+                placar[1] = linha['FTAG']
 
-        elif (linha['Away'] == time and linha['Res'] == 'A'):
+        elif (linha['AwayTeam'] == time and linha['FTR'] == 'A'):
             # armazena diferenca
-            armazena_diferenca = linha['AG'] - linha['HG']
+            armazena_diferenca = linha['FTAG'] - linha['FTHG']
             if armazena_diferenca > maior_diferenca:
                 maior_diferenca = armazena_diferenca
-                placar[0] = linha['HG']
-                placar[1] = linha['AG']
+                placar[0] = linha['FTHG']
+                placar[1] = linha['FTAG']
 
         # SALDO DE GOLS
-        if (linha['Home'] == time):
-            gols_sofridos += linha['AG'] 
-        elif (linha['Away'] == time):
-            gols_sofridos += linha['HG']
-        if (linha['Home'] == time):
-            gols_feitos += linha['HG'] 
-        elif (linha['Away'] == time):
-            gols_feitos += linha['AG']
+        if (linha['HomeTeam'] == time):
+            gols_sofridos += linha['FTAG'] 
+        elif (linha['AwayTeam'] == time):
+            gols_sofridos += linha['FTHG']
+        if (linha['HomeTeam'] == time):
+            gols_feitos += linha['FTHG'] 
+        elif (linha['AwayTeam'] == time):
+            gols_feitos += linha['FTAG']
         saldo = int(gols_feitos - gols_sofridos)
         
     st.write(f"Maior goleada do {time}: {placar[0]:.0f} X {placar[1]:.0f}")
@@ -375,7 +426,7 @@ def br_arg_goleada(competicao_df, time):
 def br_arg_ultimas_partidas(compericao_df, time, temporada_escolhida):
     # TRABALHAR COM A DATA RETORNADA
     # historico jogando dentro de casa
-    compericao_df= compericao_df.rename(columns={'Date': 'Data', 'Home':'Casa', 'Away':'Visitante', 'HG':'Gols Casa', 'AG':'Gols Visitante'})
+    compericao_df= compericao_df.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
     partidas_casa = compericao_df[['Data', 'Casa', 'Visitante', 'Gols Casa', 'Gols Visitante']].loc[compericao_df['Casa'] == time]
     partidas_casa['RESULTADO'] = "EMPATE"
     partidas_casa.loc[partidas_casa['Gols Casa'] > partidas_casa['Gols Visitante'], 'RESULTADO'] = 'VITÓRIA'
@@ -464,14 +515,20 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             inglaterra_1 = acessa_datasets.premier_2324_df
         elif temporada_escolhida == '23/24 até 26/27':
             inglaterra_1 = acessa_datasets.premier_df
+            
         escolhe_time = st.selectbox('Escolha um time da Premier League', inglaterra_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+        
         analise_por_time(inglaterra_1, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(inglaterra_1, escolhe_time, escolhe_temporada)
         goleada(inglaterra_1, escolhe_time, escolhe_temporada)
         ultimas_partidas(inglaterra_1, escolhe_time, escolhe_temporada)
         st.write("## Análise por Juiz")
         analise_por_juiz(inglaterra_1, escolhe_temporada)
+
     elif competicao_escolhida == 'Brasil':
         if temporada_escolhida == '26/27':
             brasileirao = acessa_datasets.brasil_26_df
@@ -484,8 +541,11 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         elif temporada_escolhida == '23/24 até 26/27':
             brasileirao = acessa_datasets.brasil_df
 
-        escolhe_time = st.selectbox('Escolha um time do Brasileirão:', brasileirao['Home'].sort_values().unique())
+        escolhe_time = st.selectbox('Escolha um time do Brasileirão:', brasileirao['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
         bra_arg_analie(brasileirao, competicao_escolhida, escolhe_time, temporada_escolhida)
         br_arg_ultimas_partidas(brasileirao, escolhe_time, temporada_escolhida)
     elif competicao_escolhida == 'Espanha':
@@ -503,6 +563,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
 
         escolhe_time = st.selectbox('Escolha um time da competição da La Liga', espanha_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+        
         analise_por_time(espanha_1 ,escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(espanha_1, escolhe_time, temporada_escolhida)
         goleada(espanha_1, escolhe_time, temporada_escolhida)
@@ -522,6 +586,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
 
         escolhe_time = st.selectbox('Escolha um time da Bundeliga', bundesliga['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+        
         analise_por_time(bundesliga, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(bundesliga, escolhe_time, escolhe_temporada)
         goleada(bundesliga, escolhe_time, escolhe_temporada)
@@ -541,6 +609,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
 
         escolhe_time = st.selectbox('Escolha um time da liga Italiana', italia_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+        
         analise_por_time(italia_1, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(italia_1, escolhe_time, escolhe_temporada)
         goleada(italia_1, escolhe_time, escolhe_temporada)
@@ -548,7 +620,7 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
     elif competicao_escolhida == 'França':
         if temporada_escolhida == '26/27':
             df = pd.read_csv(url.franca_1)
-            df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
+            df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y')
         elif temporada_escolhida == '25/26':
             df = acessa_datasets.ligue1_2526_df
         elif temporada_escolhida == '24/25':
@@ -560,6 +632,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
                 
         escolhe_time = st.selectbox('Escolha um time da Ligue 1:', df['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+        
         analise_por_time(df, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(df, escolhe_time, escolhe_temporada)
         goleada(df, escolhe_time, escolhe_temporada)
@@ -576,10 +652,12 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             df = acessa_datasets.holanda_2324_df
         elif temporada_escolhida == '23/24 até 26/27':
             df = acessa_datasets.holanda_df
-
-        
         escolhe_time = st.selectbox('Escolha um time da Holanda:', df['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+        
         analise_por_time(df, escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(df, escolhe_time, temporada_escolhida)
         goleada(df, escolhe_time, temporada_escolhida)
@@ -599,6 +677,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
 
         escolhe_time = st.selectbox('Escolha um time de Portugal:', portugla_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+        
         analise_por_time(portugla_1, escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(portugla_1, escolhe_time, temporada_escolhida)
         goleada(portugla_1, escolhe_time, temporada_escolhida)
@@ -618,6 +700,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
 
         escolhe_time = st.selectbox('Escolha um time da Esócia:', escocia_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+        
         analise_por_time(escocia_1, escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(escocia_1, escolhe_time, temporada_escolhida)
         goleada(escocia_1, escolhe_time, temporada_escolhida)
@@ -635,8 +721,11 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         elif temporada_escolhida == '23/24 até 26/27':
             argentina_1 = acessa_datasets.argentina_df
 
-        escolhe_time = st.selectbox('Escolha um time da Argentina:', argentina_1['Home'].sort_values().unique())
+        escolhe_time = st.selectbox('Escolha um time da Argentina:', argentina_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
+        grafico = st.checkbox('Análise Gráfica', False)
+        if grafico:
+            analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
         bra_arg_analie(argentina_1, competicao_escolhida, escolhe_time, temporada_escolhida)  
         br_arg_ultimas_partidas(argentina_1, escolhe_time, temporada_escolhida)
 

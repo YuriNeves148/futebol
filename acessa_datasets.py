@@ -10,9 +10,9 @@ premier_2425_df = pd.read_csv('datasets/premier_2425.csv')
 premier_2425_df['Date'] = pd.to_datetime(premier_2425_df['Date'], format='%Y-%m-%d')
 premier_2324_df = pd.read_csv('datasets/premier_2324.csv')
 premier_2324_df['Date'] = pd.to_datetime(premier_2324_df['Date'], format='%Y-%m-%d')
+premier_2324_df['Temporada'] = "23/24"
 premier_2425_df['Temporada'] = "24/25"
 premier_2526_df['Temporada'] = "25/26"
-premier_2324_df['Temporada'] = "23/24"
 premier_2627_df['Temporada'] = "26/27"
 
 laliga_2627_df = pd.read_csv(url.espanha_1)
@@ -113,31 +113,31 @@ portugal_2425_df['Temporada'] = "24/25"
 portugal_2324_df['Temporada'] = "23/24"
 portugal_2627_df['Temporada'] = "26/27"
 
-argentina_tudo = pd.read_csv(url.argentina_1)
-argentina_tudo['Date'] = pd.to_datetime(argentina_tudo['Date'], format='%d/%m/%Y')
-argentina_tudo = argentina_tudo[['Date','Home', 'Season','Away','HG','AG','Res']]
-argentina_23_df = argentina_tudo.loc[argentina_tudo['Season'] == '2023']
-argentina_24_df = argentina_tudo.loc[argentina_tudo['Season'] == '2024']
-argentina_25_df = argentina_tudo.loc[argentina_tudo['Season'] == '2025']
-argentina_26_df = argentina_tudo.loc[argentina_tudo['Season'] == '2026']
+argentina_df = pd.read_csv(url.argentina_1)
+argentina_df['Date'] = pd.to_datetime(argentina_df['Date'], format='%d/%m/%Y')
+argentina_df = argentina_df[['Date','Home', 'Season','Away','HG','AG','Res']]
+argentina_df = argentina_df.rename(columns={'Home':'HomeTeam', 'Away':'AwayTeam', 'Season':'Temporada', 'HG': 'FTHG', 'AG': 'FTAG', 'Res': 'FTR'})
+argentina_23_df = argentina_df.loc[argentina_df['Temporada'] == '2023'].copy()
+argentina_24_df = argentina_df.loc[argentina_df['Temporada'] == '2024'].copy()
+argentina_25_df = argentina_df.loc[argentina_df['Temporada'] == '2025'].copy()
+argentina_26_df = argentina_df.loc[argentina_df['Temporada'] == '2026'].copy()
 
-brasil_tudo = pd.read_csv(url.brasileirao)
-brasil_tudo['Date'] = pd.to_datetime(brasil_tudo['Date'], format='%d/%m/%Y')
-brasil_tudo = brasil_tudo[['Date','Home', 'Season','Away','HG','AG','Res']]
-brasil_23_df = brasil_tudo.loc[brasil_tudo['Season'] == 2023].copy()
-brasil_24_df = brasil_tudo.loc[brasil_tudo['Season'] == 2024].copy()
-brasil_25_df = brasil_tudo.loc[brasil_tudo['Season'] == 2025].copy()
-brasil_26_df = brasil_tudo.loc[brasil_tudo['Season'] == 2026].copy()
+brasil_df = pd.read_csv(url.brasileirao)
+brasil_df['Date'] = pd.to_datetime(brasil_df['Date'], format='%d/%m/%Y')
+brasil_df = brasil_df[['Date','Home', 'Season','Away','HG','AG','Res']]
+brasil_df = brasil_df.rename(columns={'Home':'HomeTeam', 'Away':'AwayTeam', 'Season':'Temporada', 'HG': 'FTHG', 'AG': 'FTAG', 'Res': 'FTR'})
+brasil_23_df = brasil_df.loc[brasil_df['Temporada'] == 2023].copy()
+brasil_24_df = brasil_df.loc[brasil_df['Temporada'] == 2024].copy()
+brasil_25_df = brasil_df.loc[brasil_df['Temporada'] == 2025].copy()
+brasil_26_df = brasil_df.loc[brasil_df['Temporada'] == 2026].copy()
 
 
-premier_df = pd.concat([premier_2425_df, premier_2526_df, premier_2324_df, premier_2627_df])
-laliga_df = pd.concat([laliga_2425_df, laliga_2526_df, laliga_2324_df, laliga_2627_df])
-italia_df = pd.concat([italia_2425_df, italia_2526_df, italia_2324_df, italia_2627_df])
+premier_df = pd.concat([premier_2324_df, premier_2425_df, premier_2526_df, premier_2627_df])
+laliga_df = pd.concat([laliga_2324_df, laliga_2425_df, laliga_2526_df, laliga_2627_df])
+italia_df = pd.concat([italia_2324_df, italia_2425_df, italia_2526_df, italia_2627_df])
 holanda_df = pd.concat([holanda_2324_df, holanda_2425_df, holanda_2526_df, holanda_2627_df]) 
-bundesliga_df = pd.concat([bundesliga_2425_df, bundesliga_2526_df, bundesliga_2324_df, bundesliga_2627_df])
-ligue1_df = pd.concat([ligue1_2425_df, ligue1_2526_df, ligue1_2324_df, ligue1_2627_df])
-escocia_df = pd.concat([escocia_2526_df, escocia_2425_df, escocia_2324_df, escocia_2627_df])
-portugal_df = pd.concat([portugal_2526_df, portugal_2425_df, portugal_2324_df, portugal_2627_df])
+bundesliga_df = pd.concat([bundesliga_2324_df, bundesliga_2425_df, bundesliga_2526_df, bundesliga_2627_df])
+ligue1_df = pd.concat([ligue1_2324_df, ligue1_2425_df, ligue1_2526_df, ligue1_2627_df])
+escocia_df = pd.concat([escocia_2324_df, escocia_2425_df, escocia_2526_df, escocia_2627_df])
+portugal_df = pd.concat([portugal_2324_df, portugal_2425_df, portugal_2526_df, portugal_2627_df])
 
-argentina_df = pd.concat([argentina_23_df, argentina_24_df, argentina_25_df, argentina_26_df])
-brasil_df = pd.concat([brasil_23_df, brasil_24_df, brasil_25_df, brasil_26_df])
