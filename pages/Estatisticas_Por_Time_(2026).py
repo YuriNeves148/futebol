@@ -230,58 +230,6 @@ def ultimas_partidas(compericao_df, time, escolhe_temporada):
 
     return
 
-def grafico_gols(time, competicao_df):
-    # grafico em linha (dot) gols feitos e sofridos ao longo das tempoadas
-    temporadas = ['23/24', '24/25', '25/26', '26/27']
-
-    temp_2324 = competicao_df[competicao_df['Temporada'] == '23/24'].copy()
-    temp_2425 = competicao_df[competicao_df['Temporada'] == '24/25'].copy()
-    temp_2526 = competicao_df[competicao_df['Temporada'] == '25/26'].copy()
-    temp_2627 = competicao_df[competicao_df['Temporada'] == '26/27'].copy()
-
-    casa_2324 = temp_2324['HomeTeam'] == time
-    visi_2324 = temp_2324['AwayTeam'] == time
-    casa_2425 = temp_2425['HomeTeam'] == time
-    visi_2425 = temp_2425['AwayTeam'] == time
-    casa_2526 = temp_2526['HomeTeam'] == time
-    visi_2526 = temp_2526['AwayTeam'] == time
-    casa_2627 = temp_2627['HomeTeam'] == time
-    visi_2627 = temp_2627['AwayTeam'] == time
-
-    # gols feitos por temporada
-    gols_marc_2324 = int( temp_2324.loc[ casa_2324, 'FTHG' ].sum() + temp_2324.loc[ visi_2324, 'FTAG' ].sum() )
-    gols_sof_2324 = int( temp_2324.loc[ casa_2324, 'FTAG' ].sum() + temp_2324.loc[ visi_2324, 'FTHG' ].sum() )
-    gols_marc_2425 = int( temp_2425.loc[ casa_2425, 'FTHG' ].sum() + temp_2425.loc[ visi_2425, 'FTAG' ].sum() )
-    gols_sof_2425 = int( temp_2425.loc[ casa_2425, 'FTAG' ].sum() + temp_2425.loc[ visi_2425, 'FTHG' ].sum() )
-    gols_marc_2526 = int( temp_2526.loc[ casa_2526, 'FTHG' ].sum() + temp_2526.loc[ visi_2526, 'FTAG' ].sum() )
-    gols_sof_2526 = int( temp_2526.loc[ casa_2526, 'FTAG' ].sum() + temp_2526.loc[ visi_2526, 'FTHG' ].sum() )
-    gols_marc_2627 = int( temp_2627.loc[ casa_2627, 'FTHG' ].sum() + temp_2627.loc[ visi_2627, 'FTAG' ].sum() )
-    gols_sof_2627 = int( temp_2627.loc[ casa_2627, 'FTAG' ].sum() + temp_2627.loc[ visi_2627, 'FTHG' ].sum() )
-    
-    gols_marc_list = [gols_marc_2324, gols_marc_2425, gols_marc_2526, gols_marc_2627]
-    gols_sof_list = [gols_sof_2324, gols_sof_2425, gols_sof_2526, gols_sof_2627]
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(temporadas, gols_marc_list, marker='s', color='green', label='Gols marcados')
-    plt.plot(temporadas, gols_sof_list, marker='o', color='darkred', label='Gols sofridos')
-    plt.grid(True, axis='y', alpha=0.6)
-    plt.xlabel('Temporadas', fontsize='16')
-    plt.ylabel('Gols', fontsize='16')
-    plt.ylim(bottom=0, top=max(max(gols_marc_list), max(gols_marc_list)))
-    plt.yticks(range(0, max(max(gols_marc_list), max(gols_marc_list)) + 20, 15))
-    # qtd de gols a cada dot
-    plt.title(f'Gols Marcados e Sofridos do $\\bf{{{time}}}$', fontsize='20')
-    for x, y in zip(temporadas, gols_marc_list):
-        plt.text(x, y+1.5, str(y), ha='center')
-    for x, y in zip(temporadas, gols_sof_list):
-        plt.text(x, y+1.5, str(y), ha='center')
-    
-    plt.tight_layout()
-    plt.legend(fontsize='14')
-    st.pyplot(plt.gcf())
-    
-    return
-
 # APENAS Brasil e Argentina
 def br_arg_sequencia_vit_der(competicao_df, time, temporada_escolhida):
         jogos = competicao_df.loc[(competicao_df['HomeTeam'] == time) | (competicao_df['AwayTeam'] == time)]
@@ -523,6 +471,7 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
             analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         analise_por_time(inglaterra_1, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(inglaterra_1, escolhe_time, escolhe_temporada)
         goleada(inglaterra_1, escolhe_time, escolhe_temporada)
@@ -548,6 +497,7 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
             analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         bra_arg_analie(brasileirao, competicao_escolhida, escolhe_time, temporada_escolhida)
         br_arg_ultimas_partidas(brasileirao, escolhe_time, temporada_escolhida)
         
@@ -570,6 +520,7 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
             analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         analise_por_time(espanha_1 ,escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(espanha_1, escolhe_time, temporada_escolhida)
         goleada(espanha_1, escolhe_time, temporada_escolhida)
@@ -592,6 +543,8 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         
         analise_por_time(bundesliga, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(bundesliga, escolhe_time, escolhe_temporada)
@@ -615,7 +568,8 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
-        
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         analise_por_time(italia_1, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(italia_1, escolhe_time, escolhe_temporada)
         goleada(italia_1, escolhe_time, escolhe_temporada)
@@ -638,6 +592,8 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         
         analise_por_time(df, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(df, escolhe_time, escolhe_temporada)
@@ -660,6 +616,8 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         
         analise_por_time(df, escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(df, escolhe_time, temporada_escolhida)
@@ -683,6 +641,8 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         
         analise_por_time(portugla_1, escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(portugla_1, escolhe_time, temporada_escolhida)
@@ -706,6 +666,8 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         
         analise_por_time(escocia_1, escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(escocia_1, escolhe_time, temporada_escolhida)
@@ -729,6 +691,8 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
+            analise_grafica.aproveitamento(competicao_escolhida, escolhe_time)
         bra_arg_analie(argentina_1, competicao_escolhida, escolhe_time, temporada_escolhida)  
         br_arg_ultimas_partidas(argentina_1, escolhe_time, temporada_escolhida)
 

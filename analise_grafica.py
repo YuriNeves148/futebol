@@ -67,7 +67,7 @@ def barra_marc_sof(comppeticao_escolhida, time_escolhido):
     
     gols_list_marc = [gols_marc_2324, gols_marc_2425, gols_marc_2526, gols_marc_2627]
     gols_list_sof = [gols_sof_2324, gols_sof_2425, gols_sof_2526, gols_sof_2627]
-    
+
     x = np.arange(len(temporadas))
     width = 0.35
     
@@ -76,18 +76,24 @@ def barra_marc_sof(comppeticao_escolhida, time_escolhido):
     
     plt.bar_label(plt_marc)
     plt.bar_label(plt_sof)
-    plt.xticks(x, temporadas)
     plt.title(f'Gols Marcados e Sofridos por Temporada - $\\bf{{{time_escolhido}}}$', fontsize='16')
+    
+    plt.xticks(x, temporadas)
     plt.xlabel('Temporadas', fontsize='11')
+
     plt.ylabel('Gols', fontsize='11')
     limite_y = int(np.ceil((max(gols_list_marc + gols_list_sof) +15 ) /10) *10)
     plt.yticks(range(0, limite_y+1, 10))
     plt.ylim(bottom=0, top=max(max(gols_list_marc), max(gols_list_sof)) + 15)
+
     plt.tight_layout()
     plt.legend()
     plt.grid(True, axis='y', alpha=0.5)
     plt.figtext(0.99, 0.01, 'Fonte: https://football-data.co.uk/', 
                 ha='right', va='bottom',fontsize=7, color='gray')
+    
+    plt.gcf().patch.set_facecolor('#D8D8D8')  
+    plt.gca().set_facecolor('#D8D8D8')        
     st.pyplot(plt.gcf())
 
     return
@@ -144,6 +150,9 @@ def barra_vit_derr(comppeticao_escolhida, time_escolhido):
     total_derrotas = [derrota_2324, derrota_2425, derrota_2526, derrota_2627]
     
     fig, axis = plt.subplots()
+    fig.patch.set_facecolor('#D8D8D8')
+    axis.set_facecolor("#D8D8D8")
+    
     bar_vitoria = axis.bar(temporadas, total_vitorias, label='Vitórias', color='green')
     bar_empates = axis.bar(temporadas, total_empates, bottom=total_vitorias, label='Empates', color='yellow')
     bar_derrota = axis.bar(temporadas, total_derrotas, bottom=[v+e for v, e in zip(total_vitorias, total_empates)], label='Derrotas', color='darkred')
@@ -165,6 +174,92 @@ def barra_vit_derr(comppeticao_escolhida, time_escolhido):
     plt.figtext(0.99, 0.01, 'Fonte: https://football-data.co.uk/', 
                 ha='right', va='bottom',fontsize=7, color='gray')
 
+    st.pyplot(plt.gcf())
+
+    return
+
+def aproveitamento(comppeticao_escolhida, time):
+    if comppeticao_escolhida == 'Inglaterra':
+        df = ads.premier_df
+    if comppeticao_escolhida == 'Espanha':
+        df = ads.laliga_df
+    if comppeticao_escolhida == 'Alemanha':
+        df = ads.bundesliga_df
+    if comppeticao_escolhida == 'Italia':
+        df = ads.italia_df
+    if comppeticao_escolhida == 'França':
+        df = ads.ligue1_df
+    if comppeticao_escolhida == 'Holanda':
+        df = ads.holanda_df
+    if comppeticao_escolhida == 'Portugal':
+        df = ads.portugal_df
+    if comppeticao_escolhida == 'Escocia':
+        df = ads.escocia_df
+    if comppeticao_escolhida == 'Brasil':
+        df = ads.brasil_df
+    if comppeticao_escolhida == 'Argentina':
+        df = ads.argentina_df
+
+    df_grafico = df.copy() 
+    df_grafico['TemporadaGrafico'] = df_grafico['Temporada'].apply(normalizar_temporada)
+
+    df_2324 = df_grafico[df_grafico['TemporadaGrafico'] == '23/24']
+    df_2425 = df_grafico[df_grafico['TemporadaGrafico'] == '24/25']
+    df_2526 = df_grafico[df_grafico['TemporadaGrafico'] == '25/26']
+    df_2627 = df_grafico[df_grafico['TemporadaGrafico'] == '26/27']
+
+    pontos_casa_2324 = (df_2324.loc[(df_2324['HomeTeam'] == time) & (df_2324['FTR'] == 'H')].groupby('HomeTeam').size().get(time, 0) * 3) + (
+        df_2324.loc[(df_2324['HomeTeam'] == time) & (df_2324['FTR'] == 'D')].groupby('HomeTeam').size().get(time, 0)
+    )
+    pontos_visi_2324 = (df_2324.loc[(df_2324['AwayTeam'] == time) & (df_2324['FTR'] == 'A')].groupby('AwayTeam').size().get(time, 0) * 3) + (
+        df_2324.loc[(df_2324['AwayTeam'] == time) & (df_2324['FTR'] == 'D')].groupby('AwayTeam').size().get(time, 0)
+    )
+
+    pontos_casa_2425 = (df_2425.loc[(df_2425['HomeTeam'] == time) & (df_2425['FTR'] == 'H')].groupby('HomeTeam').size().get(time, 0) * 3) + (
+        df_2425.loc[(df_2425['HomeTeam'] == time) & (df_2425['FTR'] == 'D')].groupby('HomeTeam').size().get(time, 0)
+    )
+    pontos_visi_2425 = (df_2425.loc[(df_2425['AwayTeam'] == time) & (df_2425['FTR'] == 'A')].groupby('AwayTeam').size().get(time, 0) * 3) + (
+        df_2425.loc[(df_2425['AwayTeam'] == time) & (df_2425['FTR'] == 'D')].groupby('AwayTeam').size().get(time, 0)
+    )
+
+    pontos_casa_2526 = (df_2526.loc[(df_2526['HomeTeam'] == time) & (df_2526['FTR'] == 'H')].groupby('HomeTeam').size().get(time, 0) * 3) + (
+        df_2526.loc[(df_2526['HomeTeam'] == time) & (df_2526['FTR'] == 'D')].groupby('HomeTeam').size().get(time, 0)
+    )
+    pontos_visi_2526 = (df_2526.loc[(df_2526['AwayTeam'] == time) & (df_2526['FTR'] == 'A')].groupby('AwayTeam').size().get(time, 0) * 3) + (
+        df_2526.loc[(df_2526['AwayTeam'] == time) & (df_2526['FTR'] == 'D')].groupby('AwayTeam').size().get(time, 0)
+    )
+    
+    pontos_casa_total = [pontos_casa_2324, pontos_casa_2425, pontos_casa_2526]
+    pontos_visi_total = [pontos_visi_2324, pontos_visi_2425, pontos_visi_2526]
+
+    temporadas = ['25/26', '24/25', '23/24']
+    
+    y = np.arange(len(temporadas))
+    altura = 0.35
+
+    fig, axis = plt.subplots()
+    fig.patch.set_facecolor('#D8D8D8')
+    axis.set_facecolor("#D8D8D8")  
+    
+    barra_casa = axis.barh(y + altura/2, pontos_casa_total, altura, label='Casa', color='#457B9D')
+    barra_fora = axis.barh(y - altura/2, pontos_visi_total, altura, label='Visitante', color='#386641')
+    
+    axis.bar_label(barra_casa, padding=-25, color='white')
+    axis.bar_label(barra_fora, padding=-25, color='white')
+    
+    axis.set_yticks(y)
+    axis.set_yticklabels(temporadas)
+    axis.set_ylabel('Temporadas', fontsize='11')
+
+    axis.set_xticks(range(0, max(max(pontos_visi_total), max(pontos_casa_total)) + 5, 10))
+    axis.set_xlim(0, max(max(pontos_visi_total), max(pontos_casa_total)) + 20)
+    axis.set_xlabel('Pontos', fontsize='11')
+
+    plt.legend(bbox_to_anchor=(1, 1))
+    plt.grid(True, axis='x', alpha=0.4)
+    plt.title(f'Relação Casa - Visitante do $\\bf{{{time}}}$', fontsize='16')
+    plt.figtext(0.99, 0.01, 'Fonte: https://football-data.co.uk/', 
+                ha='right', va='bottom',fontsize=7, color='gray')
     st.pyplot(plt.gcf())
 
     return
