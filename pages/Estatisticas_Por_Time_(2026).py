@@ -257,6 +257,8 @@ def br_arg_sequencia_vit_der(competicao_df, time, temporada_escolhida):
         st.write("Maior sequência de derrotas: ", maior_seq_der)
 
 def br_arg_gerenciamento_por_time(competicao_df, filtro, time, temporada_escolhida):
+    competicao_df = competicao_df.loc[(competicao_df['HomeTeam'] == time) | (competicao_df['AwayTeam'] == time)].copy()
+    
     # gols
     if filtro == 'Gols':
         gols_casa = competicao_df.groupby('HomeTeam')['FTHG'].sum().get(time, 0)
@@ -275,8 +277,6 @@ def br_arg_gerenciamento_por_time(competicao_df, filtro, time, temporada_escolhi
         gols_sofridos_visi = competicao_df.groupby('AwayTeam')['FTHG'].sum().get(time, 0)
 
         return f'{gols_sofridos_casa:.0f}', f'{gols_sofridos_visi:.0f}'
-    
-
     if filtro == 'Gols Sofridos por Partida':
         partidas_casa = competicao_df.loc[competicao_df['HomeTeam'] == time].groupby('HomeTeam').size().get(time, 0)
         partidas_visitante =  competicao_df.loc[competicao_df['AwayTeam'] == time].groupby('AwayTeam').size().get(time, 0)
@@ -293,11 +293,9 @@ def br_arg_gerenciamento_por_time(competicao_df, filtro, time, temporada_escolhi
             visi = 0
         return f'{casa:.2f}', f'{visi:.2f}'
     
-
-    # partidas ganhas
     if filtro == 'Partidas Ganhas':
-        ganhas_casa = competicao_df.loc[competicao_df['FTR'] == 'H'].groupby('FTR')['FTR'].size().get(time, 0)
-        ganhas_fora = competicao_df.loc[competicao_df['FTR'] == 'A'].groupby('FTR')['FTR'].size().get(time, 0)
+        ganhas_casa = competicao_df.loc[competicao_df['FTR'] == 'H'].groupby('HomeTeam').size().get(time, 0)
+        ganhas_fora = competicao_df.loc[competicao_df['FTR'] == 'A'].groupby('AwayTeam').size().get(time, 0)
         return ganhas_casa, ganhas_fora
 
     # partidas perdidas
