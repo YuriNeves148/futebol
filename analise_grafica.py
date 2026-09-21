@@ -229,10 +229,17 @@ def aproveitamento(comppeticao_escolhida, time):
         df_2526.loc[(df_2526['AwayTeam'] == time) & (df_2526['FTR'] == 'D')].groupby('AwayTeam').size().get(time, 0)
     )
     
-    pontos_casa_total = [pontos_casa_2324, pontos_casa_2425, pontos_casa_2526]
-    pontos_visi_total = [pontos_visi_2324, pontos_visi_2425, pontos_visi_2526]
+    pontos_casa_2627 = (df_2627.loc[(df_2627['HomeTeam'] == time) & (df_2627['FTR'] == 'H')].groupby('HomeTeam').size().get(time, 0) * 3) + (
+        df_2627.loc[(df_2627['HomeTeam'] == time) & (df_2627['FTR'] == 'D')].groupby('HomeTeam').size().get(time, 0)
+    )
+    pontos_visi_2627 = (df_2627.loc[(df_2627['AwayTeam'] == time) & (df_2627['FTR'] == 'A')].groupby('AwayTeam').size().get(time, 0) * 3) + (
+        df_2627.loc[(df_2627['AwayTeam'] == time) & (df_2627['FTR'] == 'D')].groupby('AwayTeam').size().get(time, 0)
+    )
 
-    temporadas = ['25/26', '24/25', '23/24']
+    pontos_casa_total = [pontos_casa_2324, pontos_casa_2425, pontos_casa_2526, pontos_casa_2627]
+    pontos_visi_total = [pontos_visi_2324, pontos_visi_2425, pontos_visi_2526, pontos_visi_2627]
+
+    temporadas = ['25/26', '24/25', '23/24', '26/27']
     
     y = np.arange(len(temporadas))
     altura = 0.35
@@ -244,8 +251,8 @@ def aproveitamento(comppeticao_escolhida, time):
     barra_casa = axis.barh(y + altura/2, pontos_casa_total, altura, label='Casa', color='#457B9D')
     barra_fora = axis.barh(y - altura/2, pontos_visi_total, altura, label='Visitante', color='#386641')
     
-    axis.bar_label(barra_casa, padding=-25, color='white')
-    axis.bar_label(barra_fora, padding=-25, color='white')
+    axis.bar_label(barra_casa, padding=-16, color='white')
+    axis.bar_label(barra_fora, padding=-16, color='white')
     
     axis.set_yticks(y)
     axis.set_yticklabels(temporadas)
@@ -257,7 +264,7 @@ def aproveitamento(comppeticao_escolhida, time):
 
     plt.legend(bbox_to_anchor=(1, 1))
     plt.grid(True, axis='x', alpha=0.4)
-    plt.title(f'Relação Casa - Visitante do $\\bf{{{time}}}$', fontsize='16')
+    plt.title(f'Pontos Jogando em Casa e Fora - $\\bf{{{time}}}$', fontsize='16')
     plt.figtext(0.99, 0.01, 'Fonte: https://football-data.co.uk/', 
                 ha='right', va='bottom',fontsize=7, color='gray')
     st.pyplot(plt.gcf())
