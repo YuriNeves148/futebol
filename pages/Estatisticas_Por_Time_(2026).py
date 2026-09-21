@@ -515,13 +515,14 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
             inglaterra_1 = acessa_datasets.premier_2324_df
         elif temporada_escolhida == '23/24 até 26/27':
             inglaterra_1 = acessa_datasets.premier_df
+
             
         escolhe_time = st.selectbox('Escolha um time da Premier League', inglaterra_1['HomeTeam'].sort_values().unique())
         st.markdown(f"<h3 style='text-align: center;'>Análise do {escolhe_time}</h3>", unsafe_allow_html=True)
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
-        
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
         analise_por_time(inglaterra_1, escolhe_time, escolhe_temporada)
         sequencia_vitorias_derrotas(inglaterra_1, escolhe_time, escolhe_temporada)
         goleada(inglaterra_1, escolhe_time, escolhe_temporada)
@@ -546,8 +547,10 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
         bra_arg_analie(brasileirao, competicao_escolhida, escolhe_time, temporada_escolhida)
         br_arg_ultimas_partidas(brasileirao, escolhe_time, temporada_escolhida)
+        
     elif competicao_escolhida == 'Espanha':
         if temporada_escolhida == '26/27':
             espanha_1 = pd.read_csv(url.espanha_1)  
@@ -566,7 +569,7 @@ def time_por_competicao(competicao_escolhida, temporada_escolhida):
         grafico = st.checkbox('Análise Gráfica', False)
         if grafico:
             analise_grafica.barra_marc_sof(competicao_escolhida, escolhe_time)
-        
+            analise_grafica.barra_vit_derr(competicao_escolhida, escolhe_time)
         analise_por_time(espanha_1 ,escolhe_time, temporada_escolhida)
         sequencia_vitorias_derrotas(espanha_1, escolhe_time, temporada_escolhida)
         goleada(espanha_1, escolhe_time, temporada_escolhida)

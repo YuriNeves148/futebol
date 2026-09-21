@@ -261,8 +261,8 @@ def time_por_competicao(comp_escolhida):
         estatisticas(acessa_datasets.portugal_df, escolhe_time1, escolhe_time2)
         historico_por_time(acessa_datasets.portugal_df, escolhe_time1, escolhe_time2)
     elif comp_escolhida == 'Brasil':
-        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.brasil_df['Home'].sort_values().unique())
-        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.brasil_df['Home'].sort_values().unique())
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.brasil_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.brasil_df['HomeTeam'].sort_values().unique())
         if escolhe_time1 == escolhe_time2:
             st.error("Não é possível escolher o mesmo time para esta análise")
             return
@@ -271,8 +271,8 @@ def time_por_competicao(comp_escolhida):
         bra_arg_historico_por_time(acessa_datasets.brasil_df, escolhe_time1, escolhe_time2)
 
     elif comp_escolhida == 'Argentina':
-        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.argentina_df['Home'].sort_values().unique())
-        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.argentina_df['Home'].sort_values().unique())
+        escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.argentina_df['HomeTeam'].sort_values().unique())
+        escolhe_time2 = st.selectbox('Escolha OUTRO time', acessa_datasets.argentina_df['HomeTeam'].sort_values().unique())
         if escolhe_time1 == escolhe_time2:
             st.error("Não é possível escolher o mesmo time para esta análise")
             return
@@ -285,8 +285,8 @@ def time_por_competicao(comp_escolhida):
 # BRASIL e ARGENTINA
 def bra_arg_estatistica(competicao_df, time1, time2):
     # media de gols:
-    partidas_df = competicao_df.loc[(( (competicao_df['Home'] == time1) | (competicao_df['Away'] == time1) ) 
-                             & ( (competicao_df['Home'] == time2) | (competicao_df['Away'] == time2) ) 
+    partidas_df = competicao_df.loc[(( (competicao_df['HomeTeam'] == time1) | (competicao_df['AwayTeam'] == time1) ) 
+                             & ( (competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2) ) 
                              )]
     
     partidas_df['Date'] = pd.to_datetime(partidas_df['Date'], dayfirst=True).dt.strftime('%d/%m/%Y')
@@ -296,9 +296,9 @@ def bra_arg_estatistica(competicao_df, time1, time2):
     total_jogos = 0
 
     for _, linha in partidas_df.iterrows():
-        partidas_gol.append(linha['HG']+linha['AG'])
+        partidas_gol.append(linha['FTHG']+linha['FTAG'])
         total_jogos += 1
-        if (linha['HG'] > 0 and linha['AG'] > 0):
+        if (linha['FTHG'] > 0 and linha['FTAG'] > 0):
             conta_ambas += 1
 
     if len(partidas_gol) != 0:
@@ -314,8 +314,8 @@ def bra_arg_estatistica(competicao_df, time1, time2):
 
 def bra_arg_historico(competicao_df, time1, time2):
     print("comp:\n\n", competicao_df)
-    partidas_df = competicao_df.loc[(( (competicao_df['Home'] == time1) | (competicao_df['Away'] == time1) ) 
-                             & ( (competicao_df['Home'] == time2) | (competicao_df['Away'] == time2) ) 
+    partidas_df = competicao_df.loc[(( (competicao_df['HomeTeam'] == time1) | (competicao_df['AwayTeam'] == time1) ) 
+                             & ( (competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2) ) 
                              )].copy()
     partidas_df['Date'] = pd.to_datetime(partidas_df['Date'], dayfirst=True)
     
@@ -323,16 +323,17 @@ def bra_arg_historico(competicao_df, time1, time2):
     # resumo ráido
     st.markdown(f"<h3 style='text-align: center;'>{time1}  x  {time2}</h3>", unsafe_allow_html=True)
     st.write("#### Últimos 5 jogos entre eles")
-    partidas_df = partidas_df.rename(columns={'Date':'Data', 'Home':'Casa', 'Away':'Visitante', 'HG':'Gols Casa', 'AG':'Gols Visitante'})
+    partidas_df = partidas_df.rename(columns={'Date':'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
+    print(partidas_df)
     partidas_df = partidas_df.sort_values('Data', ascending=False).head(5)
     partidas_df['Data'] = partidas_df['Data'].dt.strftime('%d/%m/%Y')
-    st.dataframe(partidas_df[['Data', 'Casa', 'Gols Casa','Visitante', 'Gols Visitante']], hide_index=True)
+    st.dataframe(partidas_df[['Data', 'Casa', 'Gols Casa', 'Visitante', 'Gols Visitante']], hide_index=True)
     return
 
 def bra_arg_historico_casa_visi(competicao_df, time, casa=False, visitante=False):
     padrao_df = competicao_df.copy()
     padrao_df['Date'] = pd.to_datetime(competicao_df['Date'], dayfirst=True)
-    padrao_df = padrao_df.rename(columns={'Date':'Data', 'Home':'Casa', 'Away':'Visitante', 'HG':'Gols Casa', 'AG':'Gols Visitante'})
+    padrao_df = padrao_df.rename(columns={'Date':'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
 
     # se selecionada CASA
     if casa:
@@ -348,10 +349,10 @@ def bra_arg_historico_casa_visi(competicao_df, time, casa=False, visitante=False
 
 def bra_arg_historico_por_time(competicao_df, time1, time2):
     # ultimas 5 partidas de cada time
-    hist_time1 = competicao_df.loc[(competicao_df['Home'] == time1) | (competicao_df['Away'] == time1)]
-    hist_time2 = competicao_df.loc[(competicao_df['Home'] == time2) | (competicao_df['Away'] == time2)]
-    tabela_time1 = hist_time1[['Date', 'Home', 'HG',  'Away', 'AG']]
-    tabela_time2 = hist_time2[['Date', 'Home', 'HG',  'Away', 'AG']]
+    hist_time1 = competicao_df.loc[(competicao_df['HomeTeam'] == time1) | (competicao_df['AwayTeam'] == time1)]
+    hist_time2 = competicao_df.loc[(competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2)]
+    tabela_time1 = hist_time1[['Date', 'HomeTeam', 'FTHG',  'AwayTeam', 'FTAG']]
+    tabela_time2 = hist_time2[['Date', 'HomeTeam', 'FTHG',  'AwayTeam', 'FTAG']]
 
 
     tabela_time1['Date'] = pd.to_datetime(tabela_time1['Date'], dayfirst=True)
@@ -360,37 +361,37 @@ def bra_arg_historico_por_time(competicao_df, time1, time2):
     tabela_time2['Resultado'] = ""
 
     for indice, linha in tabela_time1.iterrows():
-        if linha['Home'] == time1:
-            if linha['HG'] > linha['AG']:
+        if linha['HomeTeam'] == time1:
+            if linha['FTHG'] > linha['FTAG']:
                 tabela_time1.loc[indice, 'Resultado'] = 'Vitória'
-            elif linha['HG'] < linha['AG']:
+            elif linha['FTHG'] < linha['FTAG']:
                 tabela_time1.loc[indice, 'Resultado'] = 'Derrota'
             else:
                 tabela_time1.loc[indice, 'Resultado'] = 'Empate'
-        elif linha['Away'] == time1:
-            if linha['AG'] > linha['HG']:
+        elif linha['AwayTeam'] == time1:
+            if linha['FTAG'] > linha['FTHG']:
                 tabela_time1.loc[indice, 'Resultado'] = 'Vitória'
-            elif linha['AG'] < linha['HG']:
+            elif linha['FTAG'] < linha['FTHG']:
                 tabela_time1.loc[indice, 'Resultado'] = 'Derrota'
             else:
                 tabela_time1.loc[indice, 'Resultado'] = 'Empate'
     for indice, linha in tabela_time2.iterrows():
-        if linha['Home'] == time2:
-            if linha['HG'] > linha['AG']:
+        if linha['HomeTeam'] == time2:
+            if linha['FTHG'] > linha['FTAG']:
                 tabela_time2.loc[indice, 'Resultado'] = 'Vitória'
-            elif linha['HG'] < linha['AG']:
+            elif linha['FTHG'] < linha['FTAG']:
                 tabela_time2.loc[indice, 'Resultado'] = 'Derrota'
             else:
                 tabela_time2.loc[indice, 'Resultado'] = 'Empate'
-        elif linha['Away'] == time2:
-            if linha['AG'] > linha['HG']:
+        elif linha['AwayTeam'] == time2:
+            if linha['FTAG'] > linha['FTHG']:
                 tabela_time2.loc[indice, 'Resultado'] = 'Vitória'
-            elif linha['AG'] < linha['HG']:
+            elif linha['FTAG'] < linha['FTHG']:
                 tabela_time2.loc[indice, 'Resultado'] = 'Derrota'
             else:
                 tabela_time2.loc[indice, 'Resultado'] = 'Empate'
-    tabela_time1 = tabela_time1.rename(columns={'Date': 'Data', 'Home':'Casa', 'Away':'Visitante', 'HG': 'Gols Casa', 'AG': 'Gols Visitante'})
-    tabela_time2 = tabela_time2.rename(columns={'Date': 'Data', 'Home':'Casa', 'Away':'Visitante', 'HG': 'Gols Casa', 'AG': 'Gols Visitante'})
+    tabela_time1 = tabela_time1.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG': 'Gols Casa', 'FTAG': 'Gols Visitante'})
+    tabela_time2 = tabela_time2.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG': 'Gols Casa', 'FTAG': 'Gols Visitante'})
 
     tabela_time1 = tabela_time1.sort_values('Data', ascending=False).head()
     tabela_time2= tabela_time2.sort_values('Data', ascending=False).head()
