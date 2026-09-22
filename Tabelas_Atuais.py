@@ -3,7 +3,11 @@ from datetime import datetime
 import datetime as dt
 import streamlit as st
 import url
-
+st.set_page_config(
+    page_icon="⚽",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
 def mostra_dataframe_bra(dataframe):
     tabela = dataframe[['Date', 'Home', 'Away', 'Res', 'HG', 'AG']]
     tabela['Date'] = tabela['Date'].dt.strftime('%d/%m/%Y')

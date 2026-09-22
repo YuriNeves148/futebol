@@ -2,6 +2,11 @@ import pandas as pd
 import streamlit as st
 import datetime as dt
 import acessa_datasets
+import previsoes
+st.set_page_config(
+    page_icon="⚽",
+)
+
 st.write("## Análise por confronto")
 
 # aproveitmaento de chutes: (chutes_ao_gol / total_chutes) ou (gols / total_chutes)
@@ -78,7 +83,7 @@ def historico(competicao_df, time1, time2):
     partidas_df['Data'] = partidas_df['Data'].dt.strftime('%d/%m/%Y')
     partidas_df = partidas_df.copy()
 
-    st.write("#### Visão geral")
+    st.subheader("#### Visão geral")
     st.dataframe(partidas_df[['Data', 'Casa', 'Gols Casa','Visitante', 'Gols Visitante']], hide_index=True)
 
     return
@@ -100,7 +105,24 @@ def historico_casa_visitante(competicao_df, time, casa=False, visitante=False):
         st.dataframe(partidas_visitante[['Data', 'Casa', 'Gols Casa','Visitante', 'Gols Visitante']], hide_index=True)
     return
 
+def dados_previsao(competicao_df, time1, time2):
+    if st.toggle('Previsão entre os times'):
+        casa = st.selectbox('Escolha o time da casa', [time1, time2])
+        visi = st.selectbox('Escolha o time visitante', [time1, time2])
+        if casa == visi:
+            st.error('Os times devem ser diferentes!')
 
+        valores = previsoes.recebe(competicao_df, casa, visi)
+        
+        partida_df = pd.DataFrame({
+            'Qtd. exata (%)': valores['Partida', 'Fixo'],
+            'MAIOR ou igual (%)': valores['Partida', 'Over'],
+            'MENOR ou igual (%)': valores['Partida', 'Under'],
+        })
+        partida_df = pd.DataFrame(partida_df, index=[0,1,2,3,4,5,6])
+        partida_df.index.name = 'Gols'
+        st.markdown(f"<h3 style='text-align: center;'>Total de Gols</h3>", unsafe_allow_html=True)
+        st.dataframe(partida_df)
 
 def historico_por_time(competicao_df, time1, time2):
     # ultimas 5 partidas de cada time
@@ -154,8 +176,12 @@ def historico_por_time(competicao_df, time1, time2):
 
     tabela_time1['Data'] = tabela_time1['Data'].dt.strftime('%d/%m/%Y')
     tabela_time2['Data'] = tabela_time2['Data'].dt.strftime('%d/%m/%Y')
+    
+    st.divider()
+    dados_previsao(competicao_df, time1, time2)
+    st.divider()
 
-    st.write(f"#### Últimas 5 partidas do {time1}:")
+    st.subheader(f"Últimas 5 partidas do {time1}:")
     coluna1, coluna2 = st.columns([1,1])
     with coluna1:
         casa = st.checkbox('Casa', key='casa_time1')
@@ -167,7 +193,7 @@ def historico_por_time(competicao_df, time1, time2):
             historico_casa_visitante(competicao_df, time1, visitante=True)
     st.dataframe(tabela_time1.head(), hide_index=True)
     
-    st.write(f"#### Últimas 5 partidas do {time2}:")
+    st.subheader(f"Últimas 5 partidas do {time2}:")
     coluna1, coluna2 = st.columns([1,1])
     with coluna1:
         casa = st.checkbox('Casa', key='casa_time2')
@@ -192,6 +218,7 @@ def time_por_competicao(comp_escolhida):
         historico(acessa_datasets.premier_df, escolhe_time1, escolhe_time2)
         estatisticas(acessa_datasets.premier_df, escolhe_time1, escolhe_time2)
         historico_por_time(acessa_datasets.premier_df, escolhe_time1, escolhe_time2)
+
 
     elif comp_escolhida == 'La Liga':
         escolhe_time1 = st.selectbox('Escolha um time', acessa_datasets.laliga_df['HomeTeam'].sort_values().unique())
@@ -313,7 +340,6 @@ def bra_arg_estatistica(competicao_df, time1, time2):
     return
 
 def bra_arg_historico(competicao_df, time1, time2):
-    print("comp:\n\n", competicao_df)
     partidas_df = competicao_df.loc[(( (competicao_df['HomeTeam'] == time1) | (competicao_df['AwayTeam'] == time1) ) 
                              & ( (competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2) ) 
                              )].copy()
@@ -322,9 +348,8 @@ def bra_arg_historico(competicao_df, time1, time2):
     
     # resumo ráido
     st.markdown(f"<h3 style='text-align: center;'>{time1}  x  {time2}</h3>", unsafe_allow_html=True)
-    st.write("#### Últimos 5 jogos entre eles")
+    st.subheader("Últimos 5 jogos entre eles")
     partidas_df = partidas_df.rename(columns={'Date':'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG':'Gols Casa', 'FTAG':'Gols Visitante'})
-    print(partidas_df)
     partidas_df = partidas_df.sort_values('Data', ascending=False).head(5)
     partidas_df['Data'] = partidas_df['Data'].dt.strftime('%d/%m/%Y')
     st.dataframe(partidas_df[['Data', 'Casa', 'Gols Casa', 'Visitante', 'Gols Visitante']], hide_index=True)
@@ -353,7 +378,6 @@ def bra_arg_historico_por_time(competicao_df, time1, time2):
     hist_time2 = competicao_df.loc[(competicao_df['HomeTeam'] == time2) | (competicao_df['AwayTeam'] == time2)]
     tabela_time1 = hist_time1[['Date', 'HomeTeam', 'FTHG',  'AwayTeam', 'FTAG']]
     tabela_time2 = hist_time2[['Date', 'HomeTeam', 'FTHG',  'AwayTeam', 'FTAG']]
-
 
     tabela_time1['Date'] = pd.to_datetime(tabela_time1['Date'], dayfirst=True)
     tabela_time2['Date'] = pd.to_datetime(tabela_time2['Date'], dayfirst=True)
@@ -390,6 +414,7 @@ def bra_arg_historico_por_time(competicao_df, time1, time2):
                 tabela_time2.loc[indice, 'Resultado'] = 'Derrota'
             else:
                 tabela_time2.loc[indice, 'Resultado'] = 'Empate'
+    
     tabela_time1 = tabela_time1.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG': 'Gols Casa', 'FTAG': 'Gols Visitante'})
     tabela_time2 = tabela_time2.rename(columns={'Date': 'Data', 'HomeTeam':'Casa', 'AwayTeam':'Visitante', 'FTHG': 'Gols Casa', 'FTAG': 'Gols Visitante'})
 
@@ -399,7 +424,11 @@ def bra_arg_historico_por_time(competicao_df, time1, time2):
     tabela_time1['Data'] = tabela_time1['Data'].dt.strftime('%d/%m/%Y')
     tabela_time2['Data'] = tabela_time2['Data'].dt.strftime('%d/%m/%Y')
 
-    st.write(f"#### Últimas 5 partidas do {time1}:")
+    st.divider()
+    dados_previsao(competicao_df, time1, time2)
+    st.divider()
+
+    st.subheader(f"Últimas 5 partidas do {time1}:")
     coluna1, coluna2 = st.columns([1,1])
     with coluna1:
         casa = st.checkbox('Casa', key='casa_time1')
@@ -411,7 +440,7 @@ def bra_arg_historico_por_time(competicao_df, time1, time2):
             bra_arg_historico_casa_visi(competicao_df, time1, visitante=True)
     st.dataframe(tabela_time1, hide_index=True)
     
-    st.write(f"#### Últimas 5 partidas do {time2}:")
+    st.subheader(f"Últimas 5 partidas do {time2}:")
     coluna1, coluna2 = st.columns([1,1])
     with coluna1:
         casa = st.checkbox('Casa', key='casa_time2')

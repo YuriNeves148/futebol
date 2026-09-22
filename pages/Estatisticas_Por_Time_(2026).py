@@ -5,7 +5,10 @@ from datetime import datetime
 import datetime as dt
 import acessa_datasets, analise_grafica
 import matplotlib.pyplot as plt
-
+st.set_page_config(
+    page_icon="⚽",
+    layout="centered",
+)
 
 def analise_por_time(competicao_df, time, escolhe_temporada):
     colunas = ['Partidas','Gols', 'Gols 1° Tempo por Partida', 'Gols por Partida', 'Aproveitamento (gols marcados)', 'Partidas Ganhas', 'Gols Sofridos', 'Gols Sofridos por Partida', 'Partidas Perdidas', 'Média de chutes', 
@@ -317,7 +320,7 @@ def br_arg_gerenciamento_por_time(competicao_df, filtro, time, temporada_escolhi
         if jogos_casa != 0:
             apr_casa = (vitoria_casa / jogos_casa) * 100
         else:
-            apr_casa = 0
+            apr_casa = 0 
         jogos_visi = competicao_df.loc[competicao_df['AwayTeam'] == time].groupby('AwayTeam').size().get(time, 0)
         vitoria_visi = competicao_df.loc[(competicao_df['AwayTeam'] == time) & (competicao_df['FTR'] == 'A')].groupby('AwayTeam').size().get(time, 0)
         if jogos_visi != 0:
